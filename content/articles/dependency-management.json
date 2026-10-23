@@ -1,0 +1,171 @@
+{
+  "slug": "dependency-management",
+  "title": "Dependências de software: como atualizar com previsibilidade",
+  "category": "Ferramentas e manutenção",
+  "readTime": "13 minutos",
+  "published": "2026-10-23",
+  "summary": "Como inventariar dependências, avaliar atualizações, usar automação com revisão e validar mudanças com testes, diferenciando atualizações rotineiras de mudanças que exigem migração.",
+  "sections": [
+    {
+      "type": "content",
+      "heading": "Dependências são código que você não escreveu",
+      "body": [
+        "Toda dependência é código de terceiros que passa a fazer parte do seu sistema, com seus próprios bugs, decisões e ciclo de vida. Dependências desatualizadas acumulam custos invisíveis: vulnerabilidades não corrigidas, incompatibilidades futuras e dificuldade crescente de atualizar quando a atualização se torna inevitável.",
+        "O problema raramente é a dependência em si, e sim a falta de gestão. Quando as versões não são inventariadas, as atualizações são ad hoc e o risco não é avaliado, o sistema acumula uma dívida que só aparece no pior momento.",
+        "A gestão de dependências é, portanto, uma prática contínua: saber o que você usa, por que usa, e manter isso atualizado de forma previsível e segura."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Inventariando e entendendo o que você usa",
+      "body": [
+        "O primeiro passo é saber exatamente quais dependências existem, em que versão, e onde são usadas. Dependências diretas são as que o código referencia explicitamente; as transitivas vêm junto com elas e são fáceis de esquecer, mas igualmente presentes no sistema.",
+        "Para cada dependência, vale registrar o propósito: por que ela existe e o que aconteceria se fosse removida. Dependências sem propósito claro são candidatas a remoção, e cada dependência removida reduz a superfície de risco.",
+        "Menos é melhor. Cada dependência adicionada é uma decisão de longo prazo: ela precisará ser atualizada, compreendida e mantida. Antes de adicionar uma, pergunte se a funcionalidade justifica o custo de manutenção."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Atualizações rotineiras versus mudanças que exigem migração",
+      "body": [
+        "Nem toda atualização tem o mesmo risco. Atualizações de patch e menores, que corrigem bugs sem mudar a interface, costumam ser seguras e podem ser automatizadas com revisão. Atualizações maiores, que mudam a versão principal, frequentemente quebram compatibilidade e exigem migração.",
+        "A regra prática é distinguir pelo tipo de mudança: se a atualização preserva o comportamento e a interface, é rotineira; se muda a interface ou o comportamento, é uma migração. Tratar uma migração como rotina é a causa mais comum de quebras em atualizações.",
+        "Atualizações de segurança merecem prioridade especial. Uma vulnerabilidade conhecida em uma dependência é um risco concreto, e o custo de corrigi-la cedo é muito menor do que o de um incidente."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Exemplo: avaliando uma atualização",
+      "code": "\n// Atualização de patch (rotineira):\n//   1.2.3 -> 1.2.4  (correção de bug, sem mudança de interface)\n//   Ação: automatizar com revisão e rodar os testes.\n\n// Atualização menor (atenção):\n//   1.2.4 -> 1.9.0  (novas funcionalidades, compatível)\n//   Ação: revisar changelog e rodar a suíte completa.\n\n// Atualização maior (migração):\n//   1.9.0 -> 2.0.0  (mudança incompatível de interface)\n//   Ação: planejar migração, atualizar o código e validar em etapas.\n        ",
+      "body": [
+        "A classificação pelo tipo de mudança define o esforço e o risco. Tratar a versão 2.0.0 como uma atualização de patch seria um erro que provavelmente quebraria o sistema.",
+        "O changelog da dependência é a principal fonte de informação para essa classificação. Sem ler o que mudou, a atualização vira uma aposta."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Automação com revisão",
+      "body": [
+        "Ferramentas que detectam atualizações disponíveis e abrem solicitações de mudança automatizam a parte repetitiva, mas não substituem o julgamento humano. A automação deve propor a atualização; a revisão deve avaliar o risco e decidir.",
+        "Um fluxo comum é: a ferramenta detecta a atualização, abre uma solicitação com o changelog e o resultado dos testes, e uma pessoa revisa antes de integrar. Isso combina a velocidade da automação com a segurança da revisão.",
+        "Para atualizações de segurança, o fluxo pode ser mais direto, com prioridade maior e janela de revisão mais curta. O risco de não atualizar supera o risco de atualizar."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Validando mudanças com testes",
+      "body": [
+        "A atualização de uma dependência só é segura quando é validada. Os testes automatizados são a principal rede de segurança: eles confirmam que o comportamento do sistema não mudou de forma inesperada após a atualização.",
+        "A cobertura de testes importa aqui. Se o código que usa a dependência não está bem testado, a atualização é mais arriscada, porque as quebras podem passar despercebidas. Nesses casos, a validação manual ou uma revisão mais cuidadosa do changelog é necessária.",
+        "Quando a atualização é uma migração, a validação precisa ser mais ampla: além dos testes, considere a compatibilidade de dados, a configuração e o comportamento em produção. Migrações de dependências maiores podem exigir a mesma disciplina de uma migração de banco."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Conclusão",
+      "body": [
+        "A gestão de dependências é uma prática de higiene contínua: inventariar o que se usa, avaliar cada atualização pelo tipo de mudança e validar com testes antes de integrar. A automação acelera o processo, mas a revisão humana continua sendo o julgamento final.",
+        "Ao manter as dependências atualizadas de forma previsível, o time reduz o risco de vulnerabilidades, evita migrações dolorosas e preserva a capacidade de evoluir o sistema. O custo de atualizar com frequência é pequeno; o custo de atualizar tarde é grande."
+      ]
+    }
+  ],
+  "references": [
+    "OWASP — Dependency-Check e gestão de componentes vulneráveis",
+    "Martin Fowler — atualização de dependências e refatoração",
+    "Dependabot — documentação sobre automação de atualizações",
+    "SemVer — Semantic Versioning (especificação)"
+  ],
+  "quiz": [
+    {
+      "question": "Por que dependências desatualizadas acumulam custo?",
+      "options": [
+        "Porque ocupam espaço em disco.",
+        "Porque acumulam vulnerabilidades e incompatibilidades que dificultam a atualização futura.",
+        "Porque aumentam o número de linhas de código.",
+        "Porque não afetam o sistema."
+      ],
+      "correctIndex": 1,
+      "explanation": "A dívida cresce: vulnerabilidades não corrigidas e a dificuldade crescente de atualizar tornam a atualização tardia cara."
+    },
+    {
+      "question": "O que caracteriza uma atualização rotineira?",
+      "options": [
+        "Muda a interface e o comportamento.",
+        "Preserva o comportamento e a interface, como correções de patch.",
+        "Exige reescrever o código.",
+        "É sempre a versão principal."
+      ],
+      "correctIndex": 1,
+      "explanation": "Atualizações que preservam comportamento e interface são rotineiras e podem ser automatizadas com revisão."
+    },
+    {
+      "question": "Qual é o risco de tratar uma migração como atualização rotineira?",
+      "options": [
+        "Nenhum risco.",
+        "Quebras de compatibilidade, já que a interface ou o comportamento mudou.",
+        "O sistema fica mais rápido.",
+        "As dependências são removidas."
+      ],
+      "correctIndex": 1,
+      "explanation": "Mudanças incompatíveis exigem migração planejada; tratá-las como rotina é a causa comum de quebras."
+    },
+    {
+      "question": "Qual é o papel da automação na gestão de dependências?",
+      "options": [
+        "Substituir a revisão humana.",
+        "Propor atualizações e abrir solicitações, enquanto a revisão avalia o risco.",
+        "Remover dependências automaticamente.",
+        "Eliminar a necessidade de testes."
+      ],
+      "correctIndex": 1,
+      "explanation": "A automação acelera a parte repetitiva; o julgamento humano decide o risco e a integração."
+    },
+    {
+      "question": "Por que a cobertura de testes importa na atualização?",
+      "options": [
+        "Porque testes confirmam que o comportamento não mudou de forma inesperada.",
+        "Porque testes reduzem o tamanho do changelog.",
+        "Porque testes removem dependências.",
+        "Porque testes tornam a atualização desnecessária."
+      ],
+      "correctIndex": 0,
+      "explanation": "Os testes são a rede de segurança que detecta quebras de comportamento após a atualização."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "O que são dependências transitivas?",
+      "answer": "Dependências que vêm junto com as diretas, fáceis de esquecer, mas igualmente presentes no sistema."
+    },
+    {
+      "question": "O que é SemVer?",
+      "answer": "Versionamento semântico, que distingue mudanças de patch, menores e maiores pelo tipo de alteração."
+    },
+    {
+      "question": "O que é uma atualização de segurança?",
+      "answer": "Uma atualização que corrige uma vulnerabilidade conhecida, merecendo prioridade especial."
+    },
+    {
+      "question": "Qual é a principal fonte para avaliar uma atualização?",
+      "answer": "O changelog da dependência, que descreve o que mudou entre as versões."
+    },
+    {
+      "question": "Por que menos dependências é melhor?",
+      "answer": "Porque cada dependência é uma decisão de longo prazo que precisa ser atualizada, compreendida e mantida."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Devo atualizar todas as dependências de uma vez?",
+      "answer": "Em geral, não. Atualizações rotineiras podem ser feitas com frequência, mas migrações maiores devem ser isoladas e validadas em etapas, para que uma quebra seja fácil de localizar e reverter."
+    },
+    {
+      "question": "Como lidar com uma dependência que não tem mais manutenção?",
+      "answer": "Avalie o risco: sem manutenção, vulnerabilidades futuras não serão corrigidas. Considere substituir por uma alternativa mantida ou assumir a manutenção internamente, se o uso for crítico."
+    },
+    {
+      "question": "Automação de atualizações substitui a revisão?",
+      "answer": "Não. A automação propõe e valida parcialmente, mas a decisão de integrar — especialmente em migrações — exige julgamento humano sobre risco e compatibilidade."
+    }
+  ]
+}

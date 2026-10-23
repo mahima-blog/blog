@@ -1,0 +1,170 @@
+{
+  "slug": "technical-debt",
+  "title": "Dívida técnica: como priorizar melhorias sem parar a entrega",
+  "category": "Manutenção de software",
+  "readTime": "13 minutos",
+  "published": "2026-10-23",
+  "summary": "Como reconhecer sinais de dívida técnica, avaliar seu impacto real e dividir melhorias em mudanças pequenas — diferenciando dívida consciente de problemas que elevam o risco de mudança.",
+  "sections": [
+    {
+      "type": "content",
+      "heading": "O que é dívida técnica, de fato",
+      "body": [
+        "Dívida técnica é o custo futuro de decisões que priorizaram velocidade ou conveniência em detrimento da qualidade estrutural. A metáfora é útil porque captura a ideia de juros: quanto mais tempo a dívida permanece, mais caro fica trabalhar em cima dela. Mas, diferente da dívida financeira, a dívida técnica nem sempre é um erro.",
+        "Algumas dívidas são contraídas deliberadamente, como lançar uma funcionalidade com uma solução provisória para validar uma hipótese de mercado. Esse tipo de dívida pode ser uma escolha racional. O problema surge quando a dívida é invisível, não intencional ou nunca paga, e começa a ditar a velocidade de toda mudança futura."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Sinais de que a dívida está custando caro",
+      "body": [
+        "O primeiro sinal é a velocidade de mudança: tarefas que deveriam ser simples exigem tocar em muitos arquivos, e cada alteração arrisca quebrar algo distante. Outro sinal é a dificuldade de onboarding — quando pessoas novas levam muito tempo para entender o fluxo, há conhecimento embutido no código ou ausência de estrutura.",
+        "Testes frágeis e suítes lentas também indicam dívida. Quando uma mudança pequena quebra testes que parecem não ter relação, o acoplamento está alto. E quando o time evita mexer em certas áreas do sistema por medo, a dívida já virou um risco de negócio, não apenas um incômodo técnico.",
+        "A duplicação de conhecimento é outro sinal clássico: a mesma regra de negócio repetida em vários lugares, de modo que corrigir um bug exige lembrar de todos os pontos. Isso não é apenas feio; é uma armadilha de manutenção."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Dívida consciente versus acúmulo acidental",
+      "body": [
+        "A dívida consciente é uma decisão documentada: sabemos que a solução é provisória, registramos o porquê e definimos uma condição para revisitá-la. Esse tipo de dívida é gerenciável e, em muitos casos, saudável. O que a torna perigosa é a ausência de registro — quando a decisão provisória vira permanente sem que ninguém perceba.",
+        "O acúmulo acidental é diferente: ele surge da falta de refatoração contínua, de prazos recorrentes que cortam sempre a mesma parte da qualidade, ou da ausência de um padrão claro. Esse tipo de dívida raramente foi uma escolha; foi um efeito colateral.",
+        "Distinguir os dois muda a conversa. Dívida consciente pode ser negociada e priorizada. Acúmulo acidental exige mudança de processo, não apenas uma lista de tarefas de limpeza."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Exemplo: medindo o custo de uma duplicação",
+      "code": "\n// A mesma regra de frete aparece em três lugares.\n// Cada mudança futura precisa lembrar de todos eles.\n\n// pagamento.js\nconst frete = pedido.total > 100 ? 0 : 15;\n\n// carrinho.js\nconst frete = pedido.total > 100 ? 0 : 15;\n\n// relatorio.js\nconst frete = pedido.total > 100 ? 0 : 15;\n\n// Refatoração: uma única fonte de verdade.\nfunction calcularFrete(pedido) {\n  return pedido.total > 100 ? 0 : 15;\n}\n        ",
+      "body": [
+        "A duplicação parece inofensiva até que a regra mude — por exemplo, o frete grátis passa a ser acima de 150. Sem a refatoração, três pontos precisam ser alterados, e esquecer um deles gera inconsistência silenciosa.",
+        "O custo da dívida não está na duplicação em si, mas no risco de divergência. Centralizar a regra em uma única função elimina a armadilha e torna a mudança futura trivial."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Como priorizar o pagamento da dívida",
+      "body": [
+        "Nem toda dívida precisa ser paga imediatamente. O critério central é o custo de mudança: quanto uma área do código está atrapalhando o trabalho que o time realmente faz hoje e fará em breve? Dívida em código que raramente muda tem baixa prioridade, mesmo que pareça feia. Dívida no caminho crítico de cada entrega tem prioridade alta.",
+        "Outro critério é o risco. Código sem testes em uma área sensível — pagamento, autenticação, dados — representa risco maior do que a mesma situação em um módulo interno. Priorize onde a dívida pode causar dano real, não onde ela é mais visível.",
+        "Evite o impulso de reescrever tudo de uma vez. Grandes reescritas raramente entregam o valor esperado e frequentemente introduzem bugs novos. Prefira pagar a dívida de forma incremental, na medida em que as áreas são tocadas."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Pagando a dívida sem parar a entrega",
+      "body": [
+        "A estratégia mais eficaz é a regra do acampamento: deixe o código um pouco melhor do que você encontrou. Toda vez que uma mudança toca uma área com dívida, aproveite para refatorar a parte adjacente, sem expandir o escopo. Isso distribui o pagamento ao longo do tempo e evita o custo de uma iniciativa separada.",
+        "Para dívidas maiores, divida em passos pequenos e independentes que possam ser entregues sem quebrar o sistema. Em vez de \"migrar o módulo inteiro\", comece por extrair uma função, depois uma classe, depois uma fronteira. Cada passo deve ser revisável e reversível.",
+        "Reserve tempo no planejamento para manutenção, em vez de tratá-la como sobra. Um percentual explícito da capacidade dedicado a reduzir dívida sinaliza que a qualidade é parte do trabalho, não uma atividade opcional para quando sobrar tempo."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Conclusão",
+      "body": [
+        "Dívida técnica não é um pecado, mas uma consequência natural de decisões sob incerteza. O que separa um sistema saudável de um sistema estagnado é a capacidade de enxergar a dívida, avaliar seu custo e pagá-la de forma incremental e priorizada.",
+        "Ao diferenciar dívida consciente de acúmulo acidental, medir o custo de mudança e adotar a melhoria contínua, o time mantém a velocidade de entrega sem deixar que o código se torne um obstáculo. O objetivo não é um código perfeito, e sim um código que continue permitindo mudanças com segurança."
+      ]
+    }
+  ],
+  "references": [
+    "Ward Cunningham — The WyCash Portfolio Management System (origem da metáfora de dívida técnica)",
+    "Martin Fowler — TechnicalDebt (bliki)",
+    "Martin Fowler — Refactoring: Improving the Design of Existing Code",
+    "Michael Feathers — Working Effectively with Legacy Code"
+  ],
+  "quiz": [
+    {
+      "question": "O que a metáfora da dívida técnica pretende capturar?",
+      "options": [
+        "A quantidade de linhas de código do sistema.",
+        "O custo futuro de decisões que priorizaram velocidade em detrimento da qualidade.",
+        "O número de dependências externas.",
+        "A frequência de commits no repositório."
+      ],
+      "correctIndex": 1,
+      "explanation": "A metáfora captura a ideia de juros: decisões de curto prazo geram custo crescente de manutenção ao longo do tempo."
+    },
+    {
+      "question": "Qual é um sinal de que a dívida técnica está custando caro?",
+      "options": [
+        "O sistema tem poucos arquivos.",
+        "Mudanças simples exigem tocar muitos arquivos e arriscam quebrar partes distantes.",
+        "O time usa controle de versão.",
+        "Há poucos testes ponta a ponta."
+      ],
+      "correctIndex": 1,
+      "explanation": "O custo de mudança alto — pequenas alterações se espalhando e quebrando o sistema — é o principal sintoma de dívida cara."
+    },
+    {
+      "question": "O que diferencia a dívida consciente do acúmulo acidental?",
+      "options": [
+        "A dívida consciente é sempre menor em quantidade.",
+        "A dívida consciente é uma decisão documentada, enquanto o acúmulo acidental é efeito colateral sem registro.",
+        "O acúmulo acidental não gera custo futuro.",
+        "A dívida consciente nunca precisa ser paga."
+      ],
+      "correctIndex": 1,
+      "explanation": "A dívida consciente é gerenciável por ser explícita; o acúmulo acidental surge sem decisão e exige mudança de processo."
+    },
+    {
+      "question": "Qual é o critério mais importante para priorizar o pagamento de dívida?",
+      "options": [
+        "O quanto o código parece feio.",
+        "O custo de mudança e o risco da área em questão.",
+        "A idade do código.",
+        "O tamanho do arquivo."
+      ],
+      "correctIndex": 1,
+      "explanation": "Priorize onde a dívida atrapalha o trabalho real e onde pode causar dano, não onde é mais visível."
+    },
+    {
+      "question": "O que propõe a \"regra do acampamento\" aplicada ao código?",
+      "options": [
+        "Reescrever o sistema inteiro periodicamente.",
+        "Deixar o código um pouco melhor do que você encontrou a cada mudança.",
+        "Evitar qualquer refatoração durante a entrega.",
+        "Adiar toda dívida para o final do projeto."
+      ],
+      "correctIndex": 1,
+      "explanation": "A regra do acampamento distribui o pagamento da dívida de forma incremental, sem expandir o escopo de cada mudança."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "O que é dívida técnica?",
+      "answer": "O custo futuro de decisões que priorizaram velocidade ou conveniência em detrimento da qualidade estrutural do código."
+    },
+    {
+      "question": "O que é dívida consciente?",
+      "answer": "Uma decisão provisória documentada, com justificativa e condição para ser revisitada."
+    },
+    {
+      "question": "Qual é o principal sintoma de dívida cara?",
+      "answer": "Custo de mudança alto: alterações simples exigem tocar muitos pontos e arriscam quebrar partes distantes."
+    },
+    {
+      "question": "O que é a regra do acampamento?",
+      "answer": "Deixar o código um pouco melhor do que estava a cada mudança, pagando a dívida de forma incremental."
+    },
+    {
+      "question": "Por que grandes reescritas costumam ser arriscadas?",
+      "answer": "Porque raramente entregam o valor esperado e frequentemente introduzem novos bugs, além de interromperem a entrega."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Toda dívida técnica precisa ser paga imediatamente?",
+      "answer": "Não. Dívida em código que raramente muda tem baixa prioridade. O critério é o custo de mudança e o risco da área, não a aparência do código."
+    },
+    {
+      "question": "Como convencer a gestão a reservar tempo para reduzir dívida?",
+      "answer": "Traduza a dívida em impacto concreto: tempo perdido em mudanças, risco de bugs em áreas sensíveis e dificuldade de onboarding. Dados sobre velocidade e incidentes comunicam melhor do que argumentos estéticos."
+    },
+    {
+      "question": "Refatorar é o mesmo que reescrever?",
+      "answer": "Não. Refatorar é melhorar a estrutura interna sem mudar o comportamento, em passos pequenos e reversíveis. Reescrever substitui o código, geralmente em uma iniciativa grande e mais arriscada."
+    }
+  ]
+}

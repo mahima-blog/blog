@@ -1,0 +1,171 @@
+{
+  "slug": "observability",
+  "title": "Observabilidade na prática: relacionando logs, métricas e traces",
+  "category": "Operações e confiabilidade",
+  "readTime": "14 minutos",
+  "published": "2026-10-23",
+  "summary": "O papel de logs, métricas e rastreamento distribuído em uma investigação, com exemplos de perguntas que cada sinal ajuda a responder e cuidados para não registrar dados sensíveis.",
+  "sections": [
+    {
+      "type": "content",
+      "heading": "Observabilidade não é só coletar dados",
+      "body": [
+        "Observabilidade é a capacidade de entender o estado interno de um sistema a partir de seus sinais externos. O termo é frequentemente confundido com monitoramento, mas há uma diferença importante: monitoramento pressupõe que você sabe o que procurar, enquanto observabilidade permite investigar perguntas que você não previu.",
+        "Em sistemas distribuídos, as falhas raramente são previsíveis. Um pedido lento pode envolver dezenas de serviços, e a causa pode estar em qualquer fronteira. A observabilidade bem feita permite reconstruir o que aconteceu com um pedido específico, mesmo quando ninguém antecipou aquela falha em particular."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Os três pilares e o que cada um responde",
+      "body": [
+        "Os três sinais clássicos são logs, métricas e rastreamento distribuído. Eles não são concorrentes; respondem a perguntas diferentes e se complementam na investigação.",
+        "Logs são registros de eventos discretos: uma entrada de texto estruturado que descreve algo que aconteceu em um momento específico. Eles respondem a perguntas do tipo \"o que aconteceu exatamente neste ponto?\". São indispensáveis para o detalhe, mas difíceis de agregar e caros em volume.",
+        "Métricas são valores numéricos agregados ao longo do tempo: taxa de requisições, latência, uso de memória, fila de mensagens. Elas respondem a perguntas como \"isso está piorando?\" e \"qual é a tendência?\". São baratas de armazenar e ideais para alertas, mas não explicam o porquê de um valor isolado.",
+        "Traces registram a jornada de um pedido através dos serviços, mostrando onde o tempo foi gasto em cada etapa. Eles respondem a \"onde exatamente o pedido ficou lento?\" e conectam os componentes envolvidos. São o elo que transforma um sintoma em um diagnóstico localizado."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Exemplo: investigando um pedido lento",
+      "code": "\n// Um trace simplificado mostra a cascata de chamadas de um pedido.\n\n// GET /pedidos/1234  (total: 1.8s)\n//   ├── auth-service/validar-token     120ms\n//   ├── pedidos-service/buscar         80ms\n//   ├── estoque-service/consultar      1.4s  ← gargalo\n//   └── pagamentos-service/calcular    200ms\n\n// A métrica de latência do estoque mostra a tendência:\n// p95 do estoque-service passou de 300ms para 1.4s às 14h.\n\n// O log do estoque-service registra o detalhe:\n// { \"level\": \"warn\", \"msg\": \"consulta lenta\", \"query_ms\": 1400 }\n        ",
+      "body": [
+        "A métrica mostra que algo começou a piorar em um horário específico; o trace localiza o serviço responsável; o log revela o detalhe da consulta lenta. Cada sinal contribuiu com uma parte do diagnóstico.",
+        "Sem o trace, o time teria que adivinhar qual dos quatro serviços estava lento. Sem a métrica, não saberia quando o problema começou. Sem o log, saberia onde, mas não o porquê."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Contexto consistente: o que amarra os sinais",
+      "body": [
+        "O valor dos três pilares depende de um identificador comum que os conecte. Quando cada log, métrica e span carrega o mesmo identificador de rastreamento e o mesmo identificador de pedido, a investigação deixa de ser um quebra-cabeça de correlação manual.",
+        "Um identificador de rastreamento (trace id) propagado entre serviços permite reconstruir toda a jornada de um pedido. Um identificador de pedido (request id) permite buscar os logs de uma única requisição entre milhares. Sem esses identificadores, cada sinal vive em um silo separado.",
+        "Além dos identificadores, o contexto deve incluir o que é estável e útil: versão do serviço, ambiente, e os identificadores de negócio relevantes. Isso transforma um log isolado em uma pista que leva a todos os outros sinais."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Cuidados com dados sensíveis",
+      "body": [
+        "Logs e traces são uma superfície de vazamento de dados. Senhas, tokens, números de cartão, documentos pessoais e informações de saúde não devem aparecer em nenhum sinal. O risco é duplo: exposição a quem acessa os logs e retenção prolongada de dados que deveriam ser descartados.",
+        "A prática recomendada é não registrar dados sensíveis em primeiro lugar, e não tentar removê-los depois. Isso exige disciplina no ponto de emissão: redigir campos sensíveis, registrar apenas o necessário e revisar o que entra nos logs de bibliotecas de terceiros.",
+        "Defina políticas de retenção e acesso. Logs de depuração, que tendem a conter mais detalhes, devem ter retenção curta e acesso restrito. A observabilidade não deve se tornar um repositório permanente de dados pessoais."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Construindo uma cultura de observabilidade",
+      "body": [
+        "Observabilidade só funciona quando é parte do desenvolvimento, não um acessório de operações. Os sinais devem ser instrumentados junto com o código que os produz, e a qualidade dos sinais deve ser revisada como qualquer outro aspecto do sistema.",
+        "Comece pelas perguntas que o time realmente precisa responder: qual é a latência dos fluxos críticos? onde os erros se concentram? quanto tempo leva para um pedido atravessar o sistema? Instrumente para responder a essas perguntas antes de coletar tudo indiscriminadamente.",
+        "A coleção indiscriminada gera custo e ruído sem necessariamente melhorar a capacidade de investigar. Um conjunto pequeno de sinais bem contextualizados vale mais do que milhares de logs sem identificadores ou métricas sem rótulos consistentes."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Conclusão",
+      "body": [
+        "Logs, métricas e traces não são três ferramentas concorrentes, mas três perspectivas sobre o mesmo sistema. Juntos, e conectados por contexto consistente, permitem responder tanto às perguntas previsíveis quanto às inesperadas.",
+        "A observabilidade eficaz começa por entender o que cada sinal responde, amarrá-los com identificadores comuns e proteger os dados sensíveis. Com esses fundamentos, o time ganha a capacidade de diagnosticar problemas reais em produção sem depender de adivinhação."
+      ]
+    }
+  ],
+  "references": [
+    "Google — Site Reliability Engineering (capítulos sobre monitoramento e alertas)",
+    "Cindy Sridharan — Distributed Systems Observability",
+    "OpenTelemetry — documentação sobre sinais, contexto e propagação",
+    "Charity Majors, Liz Fong-Jones e George Miranda — Observability Engineering"
+  ],
+  "quiz": [
+    {
+      "question": "Qual é a principal diferença entre observabilidade e monitoramento?",
+      "options": [
+        "Monitoramento usa métricas e observabilidade usa logs.",
+        "Monitoramento pressupõe perguntas conhecidas; observabilidade permite investigar perguntas não previstas.",
+        "Observabilidade é mais barata que monitoramento.",
+        "Não há diferença entre os dois."
+      ],
+      "correctIndex": 1,
+      "explanation": "Observabilidade permite explorar o estado do sistema para responder perguntas que não foram antecipadas, enquanto monitoramento foca em condições conhecidas."
+    },
+    {
+      "question": "Que tipo de pergunta as métricas ajudam a responder?",
+      "options": [
+        "O que aconteceu exatamente neste ponto do código?",
+        "Qual é a tendência ao longo do tempo e o que está piorando?",
+        "Onde exatamente um pedido ficou lento entre serviços?",
+        "Qual é o conteúdo exato de uma mensagem de erro?"
+      ],
+      "correctIndex": 1,
+      "explanation": "Métricas são valores agregados no tempo, ideais para tendências e alertas, mas não para o detalhe de um evento."
+    },
+    {
+      "question": "O que um trace registra?",
+      "options": [
+        "A lista de todos os erros do sistema.",
+        "A jornada de um pedido através dos serviços, com o tempo gasto em cada etapa.",
+        "O uso de memória ao longo do tempo.",
+        "A configuração de cada serviço."
+      ],
+      "correctIndex": 1,
+      "explanation": "Traces reconstroem a cascata de chamadas de um pedido, localizando onde o tempo foi gasto."
+    },
+    {
+      "question": "Por que um identificador de rastreamento comum é importante?",
+      "options": [
+        "Para reduzir o tamanho dos logs.",
+        "Para conectar logs, métricas e spans e reconstruir a jornada de um pedido.",
+        "Para criptografar os dados sensíveis.",
+        "Para aumentar a velocidade das consultas."
+      ],
+      "correctIndex": 1,
+      "explanation": "O contexto consistente amarra os sinais e permite correlacionar a investigação entre serviços."
+    },
+    {
+      "question": "Qual é a prática recomendada para dados sensíveis nos logs?",
+      "options": [
+        "Registrar tudo e remover depois.",
+        "Não registrar dados sensíveis em primeiro lugar, redigindo no ponto de emissão.",
+        "Registrar dados sensíveis apenas em logs de depuração.",
+        "Criptografar os logs inteiros."
+      ],
+      "correctIndex": 1,
+      "explanation": "A remoção posterior é frágil; o correto é evitar que dados sensíveis entrem nos sinais desde o início."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "O que é observabilidade?",
+      "answer": "A capacidade de entender o estado interno de um sistema a partir de seus sinais externos, incluindo perguntas não previstas."
+    },
+    {
+      "question": "Quais são os três pilares da observabilidade?",
+      "answer": "Logs, métricas e rastreamento distribuído (traces)."
+    },
+    {
+      "question": "O que as métricas respondem?",
+      "answer": "Perguntas de tendência e agregação, como \"isso está piorando?\"."
+    },
+    {
+      "question": "O que um trace id permite?",
+      "answer": "Reconstruir toda a jornada de um pedido entre os serviços, conectando os spans."
+    },
+    {
+      "question": "Por que logs de depuração devem ter retenção curta?",
+      "answer": "Porque tendem a conter mais detalhes e potencialmente dados sensíveis, devendo ser descartados rapidamente."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Preciso dos três pilares desde o início?",
+      "answer": "Não. Comece pelas perguntas que o time precisa responder e instrumente para elas. Logs estruturados com contexto costumam ser o primeiro passo; métricas e traces entram conforme a complexidade cresce."
+    },
+    {
+      "question": "Como evitar que os logs fiquem cheios de ruído?",
+      "answer": "Defina níveis de log com critério, registre eventos com contexto útil e revise o que bibliotecas de terceiros emitem. Sinais sem identificadores ou sem propósito investigativo são ruído."
+    },
+    {
+      "question": "Observabilidade substitui testes?",
+      "answer": "Não. Testes previnem defeitos antes da produção; observabilidade ajuda a diagnosticar quando algo falha em produção. São práticas complementares."
+    }
+  ]
+}

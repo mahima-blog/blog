@@ -1,0 +1,162 @@
+{
+  "slug": "db-migrations",
+  "title": "Migrações de banco com baixo risco e possibilidade de reversão",
+  "category": "Dados e confiabilidade",
+  "readTime": "14 minutos",
+  "published": "2026-10-23",
+  "summary": "Cuidados para mudanças de esquema com a aplicação em uso: compatibilidade entre versões, implantação em etapas, validação e plano de recuperação para evitar indisponibilidade ou perda de dados.",
+  "sections": [
+    {
+      "type": "content",
+      "heading": "Por que migrações de banco são diferentes",
+      "body": [
+        "Diferente do código, que pode ser substituído por uma nova versão de forma atômica, o banco de dados carrega estado que precisa ser preservado. Uma migração de esquema não apenas muda a estrutura; ela precisa manter os dados existentes íntegros enquanto a aplicação continua em uso.",
+        "O risco é duplo: uma migração mal planejada pode causar indisponibilidade (a aplicação quebra porque o esquema mudou) ou perda de dados (colunas removidas antes de serem migradas). Em sistemas ativos, ambos os cenários são caros e difíceis de reverter.",
+        "A chave para migrações seguras é a coordenação entre o código e o esquema. O banco e a aplicação evoluem em passos que, individualmente, mantêm o sistema funcionando."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Compatibilidade entre versões de código e esquema",
+      "body": [
+        "O princípio central é a expansão e contração (expand-and-contract): primeiro expanda o esquema para suportar tanto o código antigo quanto o novo, depois migre os dados, e só então contraia removendo o que não é mais usado.",
+        "Isso significa que, durante a transição, a aplicação antiga deve continuar funcionando com o esquema novo, e a aplicação nova deve funcionar com o esquema antigo. Para isso, novas colunas devem ser adicionadas como opcionais, e colunas a serem removidas devem continuar existindo até que nenhum código as use.",
+        "Adicionar uma coluna que aceita nulo é quase sempre seguro. Remover uma coluna só é seguro depois de confirmar que nenhuma versão da aplicação em produção a lê ou escreve. A ordem importa: adicione primeiro, migre os dados, e remova por último."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Exemplo: renomear uma coluna em etapas",
+      "code": "\n// Etapa 1 — expandir: adicionar a coluna nova (opcional)\nALTER TABLE clientes ADD COLUMN telefone VARCHAR(20);\n\n// Etapa 2 — migrar: copiar dados da coluna antiga para a nova\nUPDATE clientes SET telefone = telefone_fixo;\n\n// Etapa 3 — transição: código passa a ler/escrever a coluna nova\n// (a coluna antiga continua existindo)\n\n// Etapa 4 — contrair: remover a coluna antiga\n// somente após confirmar que nenhum código a usa\nALTER TABLE clientes DROP COLUMN telefone_fixo;\n        ",
+      "body": [
+        "Nenhuma etapa quebra o sistema isoladamente. A coluna nova é adicionada antes de ser usada, os dados são copiados antes da troca, e a coluna antiga só é removida quando não há mais dependência.",
+        "Se algo der errado na etapa de migração de dados, a coluna antiga ainda está lá e o sistema pode continuar funcionando com o comportamento anterior. A reversão é simples porque nada foi destruído antes do tempo."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Implantação em etapas e reversibilidade",
+      "body": [
+        "Muitas migrações exigem que o código e o esquema sejam liberados em momentos diferentes. Primeiro, libere a migração de esquema que é aditiva e compatível. Depois, libere o código que usa a nova estrutura. Por fim, libere a migração que remove o que sobrou.",
+        "Cada migração deve ser pensada junto com seu caminho de reversão. Uma migração aditiva pode ser revertida removendo a coluna nova; uma migração destrutiva é difícil de reverter sem backup. Por isso, mudanças destrutivas devem ser adiadas até que a mudança se prove estável.",
+        "Tenha um plano de recuperação antes de executar: backups recentes, um procedimento de rollback testado e a capacidade de restaurar o estado anterior. A confiança na migração vem de saber o que fazer se ela falhar, não de esperar que ela não falhe."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Validando antes e durante a migração",
+      "body": [
+        "Valide a migração em um ambiente que reproduza a produção o mais fielmente possível — incluindo o volume de dados, que afeta o tempo de execução e o bloqueio de tabelas. Uma migração que leva segundos em um banco pequeno pode levar horas e travar o sistema em um banco grande.",
+        "Migrações que bloqueiam tabelas por longos períodos causam indisponibilidade. Considere estratégias que minimizem o bloqueio, como migrações em lotes, quando o volume de dados é grande. Cada motor de banco tem suas particularidades, e a estratégia precisa respeitá-las.",
+        "Monitore a migração enquanto ela executa: tempo decorrido, espaço em disco, bloqueios e erros. Uma migração longa não deve ser um processo cego; deve ser observável e interrompível."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Conclusão",
+      "body": [
+        "Migrações seguras não são uma questão de sorte, mas de sequência: expandir antes de usar, migrar antes de trocar e contrair depois de confirmar. Essa disciplina mantém o sistema disponível e os dados íntegros durante toda a transição.",
+        "Ao coordenar código e esquema, planejar a reversão e validar com o volume real, o time transforma uma operação arriscada em um processo controlado. O objetivo não é evitar toda mudança de banco, e sim torná-la previsível e recuperável."
+      ]
+    }
+  ],
+  "references": [
+    "Martin Fowler — Evolutionary Database Design",
+    "Martin Fowler — ParallelChange (padrão de expansão e contração)",
+    "Refactoring Databases — Scott Ambler e Pramod Sadalage",
+    "Documentação de migrações do motor de banco utilizado (estratégias de bloqueio e lotes)"
+  ],
+  "quiz": [
+    {
+      "question": "Qual é o princípio central para migrações seguras?",
+      "options": [
+        "Remover colunas primeiro para liberar espaço.",
+        "Expandir e contrair: adicionar, migrar e só então remover.",
+        "Executar toda a migração em um único passo atômico.",
+        "Migrar os dados depois de remover a coluna antiga."
+      ],
+      "correctIndex": 1,
+      "explanation": "O padrão expand-and-contract mantém o sistema funcionando em cada etapa, adicionando antes de usar e removendo por último."
+    },
+    {
+      "question": "Quando é seguro remover uma coluna?",
+      "options": [
+        "Logo após adicionar a coluna nova.",
+        "Somente após confirmar que nenhuma versão do código em produção a usa.",
+        "Assim que a migração de dados termina.",
+        "Nunca."
+      ],
+      "correctIndex": 1,
+      "explanation": "A remoção só é segura quando não há mais dependência de leitura ou escrita em nenhuma versão em produção."
+    },
+    {
+      "question": "Por que mudanças destrutivas devem ser adiadas?",
+      "options": [
+        "Porque são mais rápidas de executar.",
+        "Porque são difíceis de reverter sem backup e devem esperar estabilidade.",
+        "Porque nunca precisam ser feitas.",
+        "Porque bloqueiam menos a tabela."
+      ],
+      "correctIndex": 1,
+      "explanation": "Mudanças destrutivas removem dados e são difíceis de desfazer; adiá-las até a estabilidade reduz o risco."
+    },
+    {
+      "question": "Qual fator afeta mais o risco de uma migração em produção?",
+      "options": [
+        "A cor do esquema.",
+        "O volume de dados e o tempo de bloqueio das tabelas.",
+        "O nome das colunas.",
+        "O número de comentários no código."
+      ],
+      "correctIndex": 1,
+      "explanation": "O volume de dados determina o tempo de execução e o bloqueio, que podem causar indisponibilidade."
+    },
+    {
+      "question": "O que deve existir antes de executar uma migração?",
+      "options": [
+        "Um plano de recuperação e backup testado.",
+        "A certeza absoluta de que nada vai falhar.",
+        "A remoção prévia dos dados antigos.",
+        "Um banco vazio para teste."
+      ],
+      "correctIndex": 0,
+      "explanation": "A confiança vem de saber o que fazer se a migração falhar, incluindo backup e procedimento de rollback."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "O que é o padrão expand-and-contract?",
+      "answer": "Expandir o esquema para suportar código antigo e novo, migrar os dados e só então contrair removendo o que não é usado."
+    },
+    {
+      "question": "Por que adicionar uma coluna que aceita nulo é seguro?",
+      "answer": "Porque não quebra o código antigo, que simplesmente ignora a coluna nova."
+    },
+    {
+      "question": "Quando uma coluna pode ser removida?",
+      "answer": "Somente após confirmar que nenhuma versão do código em produção a lê ou escreve."
+    },
+    {
+      "question": "O que torna uma migração destrutiva arriscada?",
+      "answer": "Ela remove dados e é difícil de reverter sem backup confiável."
+    },
+    {
+      "question": "Por que validar a migração com volume real é importante?",
+      "answer": "Porque o volume afeta o tempo de execução e o bloqueio, que podem causar indisponibilidade."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Posso fazer toda a migração em um único deploy?",
+      "answer": "Em muitos casos, não com segurança. Mudanças que envolvem remoção ou alteração de significado exigem etapas separadas para código e esquema, para que nenhuma versão quebre durante a transição."
+    },
+    {
+      "question": "Como reverter uma migração que já removeu dados?",
+      "answer": "A reversão depende de backup. Por isso, mudanças destrutivas devem ser adiadas e precedidas de backup testado e procedimento de rollback. Sem isso, a recuperação pode ser impossível."
+    },
+    {
+      "question": "Migrações em lotes valem a pena?",
+      "answer": "Sim, quando o volume é grande. Migrar em lotes reduz o bloqueio e o risco de indisponibilidade, embora aumente a complexidade. A decisão depende do motor de banco e do volume real."
+    }
+  ]
+}
