@@ -2,7 +2,7 @@
   "slug": "clean-architecture",
   "title": "Clean Architecture",
   "category": "Arquitetura",
-  "readTime": "11 minutos",
+  "readTime": "16 minutos",
   "published": "2026-10-22",
   "summary": "Uma visão prática de como separar responsabilidade, energia e dependência em sistemas complexos sem cair em burocracia ou abstrações vazias.",
   "sections": [
@@ -40,12 +40,66 @@
       ]
     },
     {
-      "type": "example",
-      "heading": "Exemplo aplicado: pedido de e-commerce",
-      "code": "\n// domínio\nclass Pedido {\n  constructor(itens, cliente) {\n    this.itens = itens;\n    this.cliente = cliente;\n  }\n\n  total() {\n    return this.itens.reduce((s, item) => s + item.preco, 0);\n  }\n}\n\nclass CalcularValorPedido {\n  executar(pedido) {\n    if (pedido.total() <= 0) {\n      throw new Error('Pedido sem itens válidos');\n    }\n    return pedido.total();\n  }\n}\n\n// infraestrutura\nclass PedidoRepository {\n  salvar(pedido) {\n    // persiste no banco\n  }\n}\n        ",
+      "type": "content",
+      "heading": "Estrutura de projetos em .NET Core",
       "body": [
-        "No exemplo, a lógica que valida o pedido e calcula o valor é completamente independente da camada de persistência. O banco de dados é um detalhe. O caso de uso conhece a abstração de um repositório, mas não depende de como o objeto é salvo no banco.",
-        "Se em uma nova sprint a empresa passar de PostgreSQL para MongoDB, por exemplo, a regra de negócio não precisa ser reescrita. O que muda é a implementação do adaptador, e a aplicação continua funcionando sem que o domínio “saiba” sobre a mudança."
+        "Em .NET Core, a separação de camadas costuma ser materializada em projetos distintos dentro de uma mesma solução. Separar fisicamente o domínio da infraestrutura torna a regra de dependência explícita: o compilador impede que o domínio referencie bibliotecas de banco de dados ou de framework web.",
+        "Uma estrutura comum organiza a solução em quatro projetos: o domínio (entidades e regras de negócio), a aplicação (casos de uso e portas/contratos), a infraestrutura (implementações de persistência, mensageria e integrações) e a API (controladores e configuração de host).",
+        "A direção das referências segue a regra de dependência. A aplicação referencia o domínio, a infraestrutura referencia a aplicação e o domínio, e a API referencia a aplicação e a infraestrutura. Nenhum projeto externo é referenciado pelo domínio, que permanece livre de dependências de frameworks."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Estrutura de diretórios da solução",
+      "code": "\nMinhaLoja.sln\n└── src/\n    ├── MinhaLoja.Domain/              # entidades, value objects, regras de negócio\n    │   ├── Entities/\n    │   │   ├── Pedido.cs\n    │   │   └── ItemPedido.cs\n    │   ├── ValueObjects/\n    │   │   └── Dinheiro.cs\n    │   └── Exceptions/\n    │       └── PedidoInvalidoException.cs\n    │\n    ├── MinhaLoja.Application/         # casos de uso e contratos (portas)\n    │   ├── UseCases/\n    │   │   └── CriarPedido/\n    │   │       ├── CriarPedidoCommand.cs\n    │   │       ├── CriarPedidoHandler.cs\n    │   │       └── CriarPedidoResponse.cs\n    │   └── Ports/\n    │       └── IPedidoRepository.cs\n    │\n    ├── MinhaLoja.Infrastructure/      # adaptadores: EF Core, filas, SDKs\n    │   ├── Persistence/\n    │   │   ├── AppDbContext.cs\n    │   │   └── PedidoRepository.cs\n    │   └── DependencyInjection.cs\n    │\n    └── MinhaLoja.Api/                 # controladores e configuração do host\n        ├── Controllers/\n        │   └── PedidosController.cs\n        ├── Program.cs\n        └── appsettings.json\n        ",
+      "body": [
+        "O projeto de domínio não referencia nenhum outro projeto e não possui pacotes de infraestrutura, como o Entity Framework Core. Isso garante que as regras de negócio não fiquem presas a um ORM ou a uma biblioteca específica.",
+        "Os contratos (as interfaces de repositório) vivem na camada de aplicação, não na infraestrutura. É a aplicação que declara o que precisa — por exemplo, “preciso salvar um pedido” — e a infraestrutura apenas fornece uma implementação concreta desse contrato."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Entidades e regras de negócio no domínio",
+      "code": "\n// MinhaLoja.Domain/Entities/Pedido.cs\nnamespace MinhaLoja.Domain.Entities;\n\npublic class Pedido\n{\n    private readonly List<ItemPedido> _itens = new();\n\n    public Guid Id { get; private set; }\n    public Cliente Cliente { get; private set; }\n    public IReadOnlyCollection<ItemPedido> Itens => _itens.AsReadOnly();\n\n    public Pedido(Cliente cliente)\n    {\n        Id = Guid.NewGuid();\n        Cliente = cliente ?? throw new ArgumentNullException(nameof(cliente));\n    }\n\n    public void AdicionarItem(Produto produto, int quantidade)\n    {\n        if (quantidade <= 0)\n            throw new PedidoInvalidoException(\"A quantidade deve ser maior que zero.\");\n\n        _itens.Add(new ItemPedido(produto, quantidade));\n    }\n\n    public decimal Total() => _itens.Sum(i => i.Produto.Preco * i.Quantidade);\n}\n        ",
+      "body": [
+        "A entidade encapsula suas próprias regras: não é possível adicionar um item com quantidade inválida, e o total é sempre calculado a partir do estado interno. O domínio fala apenas em conceitos do negócio — produtos, itens e pedidos — sem mencionar banco de dados ou HTTP.",
+        "Note que as propriedades têm setter privado. Isso impede que código externo altere o estado de forma arbitrária, forçando as mudanças a passarem pelos métodos que preservam as invariantes."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Caso de uso e contrato de repositório na aplicação",
+      "code": "\n// MinhaLoja.Application/Ports/IPedidoRepository.cs\nnamespace MinhaLoja.Application.Ports;\n\npublic interface IPedidoRepository\n{\n    Task<Pedido?> ObterPorIdAsync(Guid id, CancellationToken ct = default);\n    Task SalvarAsync(Pedido pedido, CancellationToken ct = default);\n}\n\n// MinhaLoja.Application/UseCases/CriarPedido/CriarPedidoHandler.cs\nnamespace MinhaLoja.Application.UseCases.CriarPedido;\n\npublic class CriarPedidoHandler\n{\n    private readonly IPedidoRepository _repository;\n\n    public CriarPedidoHandler(IPedidoRepository repository)\n    {\n        _repository = repository;\n    }\n\n    public async Task<CriarPedidoResponse> HandleAsync(\n        CriarPedidoCommand command, CancellationToken ct = default)\n    {\n        var pedido = new Pedido(command.Cliente);\n\n        foreach (var item in command.Itens)\n            pedido.AdicionarItem(item.Produto, item.Quantidade);\n\n        if (pedido.Total() <= 0)\n            throw new PedidoInvalidoException(\"Pedido sem itens válidos.\");\n\n        await _repository.SalvarAsync(pedido, ct);\n\n        return new CriarPedidoResponse(pedido.Id, pedido.Total());\n    }\n}\n        ",
+      "body": [
+        "O caso de uso depende apenas da interface IPedidoRepository, definida na própria camada de aplicação. Ele não conhece o Entity Framework Core nem qualquer banco específico; apenas coordena o fluxo de criar um pedido, validar e persistir.",
+        "A validação de que o pedido não pode ter total zero continua no domínio e na aplicação, e a persistência é delegada à abstração. Se amanhã o banco mudar, o caso de uso permanece intacto."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Implementação do repositório na infraestrutura",
+      "code": "\n// MinhaLoja.Infrastructure/Persistence/PedidoRepository.cs\nusing Microsoft.EntityFrameworkCore;\nusing MinhaLoja.Application.Ports;\nusing MinhaLoja.Domain.Entities;\n\nnamespace MinhaLoja.Infrastructure.Persistence;\n\npublic class PedidoRepository : IPedidoRepository\n{\n    private readonly AppDbContext _context;\n\n    public PedidoRepository(AppDbContext context)\n    {\n        _context = context;\n    }\n\n    public async Task<Pedido?> ObterPorIdAsync(\n        Guid id, CancellationToken ct = default)\n    {\n        return await _context.Pedidos\n            .Include(p => p.Itens)\n            .FirstOrDefaultAsync(p => p.Id == id, ct);\n    }\n\n    public async Task SalvarAsync(Pedido pedido, CancellationToken ct = default)\n    {\n        _context.Pedidos.Add(pedido);\n        await _context.SaveChangesAsync(ct);\n    }\n}\n\n// MinhaLoja.Infrastructure/DependencyInjection.cs\nusing Microsoft.Extensions.DependencyInjection;\nusing MinhaLoja.Application.Ports;\nusing MinhaLoja.Infrastructure.Persistence;\n\nnamespace MinhaLoja.Infrastructure;\n\npublic static class DependencyInjection\n{\n    public static IServiceCollection AddInfrastructure(\n        this IServiceCollection services, string connectionString)\n    {\n        services.AddDbContext<AppDbContext>(o =>\n            o.UseSqlServer(connectionString));\n\n        services.AddScoped<IPedidoRepository, PedidoRepository>();\n\n        return services;\n    }\n}\n        ",
+      "body": [
+        "A infraestrutura conhece o contrato IPedidoRepository e fornece a implementação concreta usando o Entity Framework Core. É aqui — e somente aqui — que o ORM e a string de conexão aparecem.",
+        "O método de extensão AddInfrastructure centraliza o registro das dependências. A camada de API chama esse método no Startup, sem precisar conhecer os detalhes internos de como cada repositório é construído."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Controller e injeção de dependência na API",
+      "code": "\n// MinhaLoja.Api/Controllers/PedidosController.cs\nusing Microsoft.AspNetCore.Mvc;\nusing MinhaLoja.Application.UseCases.CriarPedido;\n\nnamespace MinhaLoja.Api.Controllers;\n\n[ApiController]\n[Route(\"api/pedidos\")]\npublic class PedidosController : ControllerBase\n{\n    private readonly CriarPedidoHandler _handler;\n\n    public PedidosController(CriarPedidoHandler handler)\n    {\n        _handler = handler;\n    }\n\n    [HttpPost]\n    public async Task<IActionResult> Criar(\n        CriarPedidoCommand command, CancellationToken ct)\n    {\n        var response = await _handler.HandleAsync(command, ct);\n        return CreatedAtAction(nameof(Criar), new { id = response.Id }, response);\n    }\n}\n\n// MinhaLoja.Api/Program.cs\nusing MinhaLoja.Application.UseCases.CriarPedido;\nusing MinhaLoja.Infrastructure;\n\nvar builder = WebApplication.CreateBuilder(args);\n\nbuilder.Services.AddControllers();\nbuilder.Services.AddScoped<CriarPedidoHandler>();\nbuilder.Services.AddInfrastructure(\n    builder.Configuration.GetConnectionString(\"Default\"));\n\nvar app = builder.Build();\n\napp.MapControllers();\napp.Run();\n        ",
+      "body": [
+        "O controller é fino: recebe a requisição, delega ao caso de uso e devolve a resposta. Ele não contém regra de negócio nem acesso direto ao banco. O framework ASP.NET Core é usado apenas como mecanismo de transporte.",
+        "No Program.cs, o caso de uso e a infraestrutura são registrados no contêiner de injeção de dependência. A inversão de dependência faz o resto: o CriarPedidoHandler recebe o IPedidoRepository concreto sem saber qual implementação está sendo injetada."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "O fluxo completo em ação",
+      "body": [
+        "Nos exemplos acima, a lógica que valida o pedido e calcula o valor é completamente independente da camada de persistência. O banco de dados é um detalhe: o caso de uso conhece a abstração IPedidoRepository, mas não depende de como o objeto é salvo.",
+        "Se em uma nova sprint a empresa passar de SQL Server para MongoDB, por exemplo, a regra de negócio não precisa ser reescrita. O que muda é a implementação do adaptador na infraestrutura, e a aplicação continua funcionando sem que o domínio “saiba” sobre a mudança.",
+        "A inversão de dependência é o que torna isso possível. Em vez de o caso de uso instanciar um repositório concreto, ele recebe a interface via construtor. O contêiner de injeção de dependência resolve a implementação em tempo de execução, mantendo o domínio e a aplicação desacoplados da tecnologia."
       ]
     },
     {
