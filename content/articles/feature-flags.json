@@ -1,0 +1,164 @@
+{
+  "slug": "feature-flags",
+  "title": "Feature flags: liberação gradual, controle e ciclo de vida",
+  "category": "Práticas de desenvolvimento",
+  "readTime": "13 minutos",
+  "published": "2026-10-23",
+  "summary": "Como usar feature flags para limitar a exposição de uma mudança e controlar sua ativação, abordando riscos como combinações difíceis de testar e flags esquecidas, além de critérios para removê-las.",
+  "sections": [
+    {
+      "type": "content",
+      "heading": "O que uma feature flag permite",
+      "body": [
+        "Uma feature flag é um mecanismo que liga ou desliga um comportamento em tempo de execução, sem exigir um novo deploy. Isso separa a implantação do código da liberação da funcionalidade: o código pode estar em produção, mas inativo, até que a flag seja acionada.",
+        "Essa separação tem valor prático. Uma mudança arriscada pode ser liberada para um pequeno grupo primeiro, observada e então ampliada. Se algo der errado, a flag pode ser desligada rapidamente, sem a lentidão de um rollback de deploy.",
+        "Flags também permitem entregar trabalho grande em partes, integrando o código continuamente sem expor funcionalidade incompleta. O código evolui em produção, mas o usuário só vê o que está pronto."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Casos de uso e níveis de controle",
+      "body": [
+        "O uso mais comum é o lançamento gradual: liberar uma funcionalidade para uma porcentagem crescente de usuários e monitorar o impacto. Outro uso é o kill switch, uma flag de emergência que desliga um recurso problemático sem depender de deploy.",
+        "Flags também servem para experimentos e testes A/B, permitindo comparar comportamentos diferentes entre grupos. E podem habilitar funcionalidades apenas para ambientes específicos ou para usuários internos, antes da liberação geral.",
+        "O controle pode ser por porcentagem, por segmento de usuários, por ambiente ou por uma combinação deles. O importante é que a decisão de ativar seja externa ao código, permitindo mudar o comportamento sem alterar o sistema."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Exemplo: liberação gradual de um novo fluxo",
+      "code": "\n// O comportamento é escolhido em tempo de execução pela flag.\n\nfunction processarPagamento(pedido) {\n  if (featureFlag.ativa('novo-fluxo-pagamento', pedido.clienteId)) {\n    return novoFluxoPagamento(pedido);\n  }\n  return fluxoPagamentoAtual(pedido);\n}\n\n// A flag pode liberar o novo fluxo para 5% dos clientes,\n// depois 25%, 50% e 100%, observando o impacto a cada passo.\n        ",
+      "body": [
+        "O código novo e o antigo coexistem, e a flag decide qual caminho seguir. Isso permite ampliar gradualmente e reverter rapidamente se o novo fluxo apresentar problemas.",
+        "O custo é a complexidade adicional: dois caminhos para testar e manter enquanto a flag existir. Por isso, a flag deve ser tratada como temporária e removida quando a transição termina."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Riscos: combinações e flags esquecidas",
+      "body": [
+        "O principal risco das flags é a explosão combinatória. Cada flag dobra o número de configurações possíveis, e testar todas as combinações se torna impraticável. Duas flags que interagem podem produzir comportamentos que nenhum teste cobriu.",
+        "Por isso, mantenha o número de flags ativas baixo e remova-as assim que cumprirem seu papel. Flags de longa duração acumulam dívida e aumentam a superfície de estados não testados.",
+        "Flags esquecidas são outro risco: código morto que permanece no sistema porque ninguém lembra de removê-lo. Sem um ciclo de vida explícito, uma flag de lançamento vira um mecanismo permanente e, eventualmente, um bug latente.",
+        "Outro risco é a flag mascarar um problema: desligar uma funcionalidade resolve o sintoma, mas a causa raiz permanece. O kill switch é uma medida de emergência, não um substituto para corrigir o problema."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Um ciclo de vida explícito para flags",
+      "body": [
+        "Toda flag deve ter um dono e uma data de expiração. Quando a flag é criada, defina quem é responsável por removê-la e quando. Isso transforma a remoção de uma intenção vaga em um compromisso concreto.",
+        "Registre as flags em um inventário visível, com estado atual e previsão de remoção. Uma lista central evita que flags se percam e permite identificar as que já deveriam ter sido removidas.",
+        "Ao concluir a liberação, remova a flag e o código do caminho antigo, deixando apenas o comportamento novo. A remoção deve ser tratada como parte da entrega da funcionalidade, não como uma tarefa opcional de limpeza.",
+        "Algumas equipes usam alertas ou verificações automáticas que sinalizam flags próximas da expiração. Isso reforça o ciclo de vida sem depender da memória de alguém."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Conclusão",
+      "body": [
+        "Feature flags são uma ferramenta poderosa para reduzir o risco de mudanças, mas só funcionam bem quando tratadas como temporárias e gerenciadas com disciplina. Sem um ciclo de vida explícito, elas passam de aliadas a fonte de complexidade.",
+        "Ao limitar o número de flags ativas, definir dono e expiração, e remover cada flag ao concluir a transição, o time aproveita o controle da liberação gradual sem acumular dívida. O objetivo é a mudança segura, não a permanência do mecanismo."
+      ]
+    }
+  ],
+  "references": [
+    "Martin Fowler — Feature Toggles",
+    "Pete Hodgson — Feature Toggles (artigo de referência sobre o padrão)",
+    "LaunchDarkly — Feature Flag Best Practices",
+    "Trunk Based Development — documentação sobre integração contínua e flags"
+  ],
+  "quiz": [
+    {
+      "question": "O que uma feature flag separa?",
+      "options": [
+        "O código do banco de dados.",
+        "A implantação do código da liberação da funcionalidade.",
+        "Os testes da produção.",
+        "O front-end do back-end."
+      ],
+      "correctIndex": 1,
+      "explanation": "A flag permite que o código esteja em produção, mas inativo, separando deploy de liberação."
+    },
+    {
+      "question": "Qual é o principal risco de acumular muitas flags ativas?",
+      "options": [
+        "Reduzir o número de deploys.",
+        "Explosão combinatória de configurações difíceis de testar.",
+        "Aumentar a velocidade do sistema.",
+        "Eliminar a necessidade de testes."
+      ],
+      "correctIndex": 1,
+      "explanation": "Cada flag dobra as combinações possíveis, tornando impraticável testar todas as interações."
+    },
+    {
+      "question": "O que é um kill switch?",
+      "options": [
+        "Uma flag que remove código permanentemente.",
+        "Uma flag de emergência que desliga um recurso problemático sem depender de deploy.",
+        "Um teste que mata processos.",
+        "Um mecanismo de cache."
+      ],
+      "correctIndex": 1,
+      "explanation": "O kill switch permite desligar rapidamente uma funcionalidade problemática, como medida de emergência."
+    },
+    {
+      "question": "O que toda flag deve ter para um ciclo de vida saudável?",
+      "options": [
+        "Um dono e uma data de expiração.",
+        "Um nome aleatório.",
+        "Nenhum registro.",
+        "Uma dependência de banco."
+      ],
+      "correctIndex": 0,
+      "explanation": "Dono e expiração transformam a remoção em compromisso concreto, evitando flags esquecidas."
+    },
+    {
+      "question": "O que deve acontecer ao concluir a liberação de uma funcionalidade?",
+      "options": [
+        "Manter a flag para sempre, por segurança.",
+        "Remover a flag e o caminho antigo, deixando apenas o comportamento novo.",
+        "Adicionar mais flags para o próximo lançamento.",
+        "Esconder a flag dos usuários."
+      ],
+      "correctIndex": 1,
+      "explanation": "A remoção da flag e do código antigo é parte da entrega, evitando dívida e estados não testados."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "O que é uma feature flag?",
+      "answer": "Um mecanismo que liga ou desliga um comportamento em tempo de execução, separando deploy de liberação."
+    },
+    {
+      "question": "O que é liberação gradual?",
+      "answer": "Liberar uma funcionalidade para uma porcentagem crescente de usuários, observando o impacto antes da liberação total."
+    },
+    {
+      "question": "O que é um kill switch?",
+      "answer": "Uma flag de emergência que desliga um recurso problemático rapidamente, sem depender de deploy."
+    },
+    {
+      "question": "Por que flags devem ser temporárias?",
+      "answer": "Porque flags de longa duração acumulam dívida e aumentam a superfície de estados não testados."
+    },
+    {
+      "question": "O que é explosão combinatória de flags?",
+      "answer": "O crescimento exponencial de combinações possíveis conforme o número de flags aumenta, tornando os testes impraticáveis."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Feature flags substituem testes?",
+      "answer": "Não. Flags reduzem o risco de liberação, mas não substituem a verificação de comportamento. Na verdade, elas aumentam a necessidade de testes, já que criam caminhos alternativos que precisam ser cobertos."
+    },
+    {
+      "question": "Quando devo remover uma flag?",
+      "answer": "Assim que a transição estiver concluída e o comportamento novo estiver estável. A remoção deve ser parte da entrega, com dono e prazo definidos desde a criação da flag."
+    },
+    {
+      "question": "Posso usar uma flag como configuração permanente?",
+      "answer": "Evite. Flags são mecanismos temporários de transição. Configurações permanentes devem ser tratadas como configuração de sistema, com outro ciclo de vida e responsabilidade, para não confundir os dois propósitos."
+    }
+  ]
+}

@@ -1,0 +1,170 @@
+{
+  "slug": "integration-tests",
+  "title": "Testes de integração eficazes: cobertura útil sem lentidão",
+  "category": "Testes e qualidade",
+  "readTime": "14 minutos",
+  "published": "2026-10-23",
+  "summary": "Como escolher as integrações que realmente merecem teste, preparar dependências de forma determinística e equilibrar testes unitários, de integração e ponta a ponta sem travar o feedback do desenvolvimento.",
+  "sections": [
+    {
+      "type": "content",
+      "heading": "Por que o equilíbrio entre camadas de teste importa",
+      "body": [
+        "Testes unitários são rápidos e baratos, mas isolam tanto o código que não capturam erros de contrato entre componentes. Testes ponta a ponta enxergam o sistema inteiro, mas são lentos, frágeis e caros de manter. Os testes de integração ocupam o meio do caminho: verificam que duas ou mais unidades reais funcionam juntas, sem o custo de subir toda a aplicação.",
+        "O problema não é a falta de testes, e sim a distribuição errada deles. Uma suíte com milhares de testes unitários e nenhum teste de integração pode passar verde enquanto o sistema quebra na conexão entre repositório e banco, ou entre serviço e mensageria. O inverso — uma suíte dominada por testes ponta a ponta — deixa o feedback lento e faz o time evitar rodar os testes com frequência."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "O que um teste de integração deve verificar",
+      "body": [
+        "Um bom teste de integração foca em contratos e fronteiras: a forma como um componente fala com outro, e não a lógica interna de cada um. Se o seu repositório mapeia uma entidade para uma tabela, o teste de integração confirma que o mapeamento funciona contra um banco real (ou um equivalente fiel), e não que o algoritmo de negócio dentro da entidade está correto.",
+        "Isso significa que o teste de integração deve ser complementar ao unitário, nunca duplicá-lo. Se você já testou a regra de desconto em nível unitário, não repita a mesma lógica no teste de integração; verifique apenas que a regra, quando acionada pelo fluxo real, produz o efeito esperado no ponto de fronteira.",
+        "Concentre-se nas integrações que mais erram na prática: acesso a banco de dados, chamadas a APIs externas, filas e mensageria, serialização e desserialização, e configuração de infraestrutura. Integrações triviais ou estáveis raramente justificam o custo de um teste dedicado."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Determinismo: a base de um teste confiável",
+      "body": [
+        "Um teste flaky — que às vezes passa e às vezes falha sem mudança no código — destrói a confiança da equipe e, com o tempo, leva as pessoas a ignorar falhas reais. A causa mais comum de flakiness em integração é a dependência de estado compartilhado, ordem de execução, relógio ou recursos externos não controlados.",
+        "Para manter o determinismo, cada teste deve preparar seu próprio estado, sem depender de dados criados por outro teste. Use bancos descartáveis, transações revertidas ou fixtures isoladas por execução. Evite depender da hora atual; injete o relógio ou congele o tempo. Evite esperar por tempos fixos; prefira condições explícitas de prontidão.",
+        "A ordem dos testes não deve importar. Se a suíte só passa em uma ordem específica, há estado vazando entre os testes, e isso é um defeito da suíte, não do sistema."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Exemplo: testando um repositório contra um banco real",
+      "code": "\n// O teste usa um banco descartável iniciado no setup\n// e limpo ao final, garantindo isolamento entre execuções.\n\ndescribe('PedidoRepository', () => {\n  let repository;\n  let connection;\n\n  beforeAll(async () => {\n    connection = await createTestDatabase();\n    repository = new PedidoRepository(connection);\n  });\n\n  afterAll(async () => {\n    await connection.close();\n  });\n\n  it('persiste e recupera um pedido com seus itens', async () => {\n    const pedido = new Pedido([\n      { produto: 'caneta', preco: 2.5 },\n      { produto: 'caderno', preco: 12.0 }\n    ]);\n\n    await repository.salvar(pedido);\n    const recuperado = await repository.buscarPorId(pedido.id);\n\n    expect(recuperado.itens).toHaveLength(2);\n    expect(recuperado.total()).toBe(14.5);\n  });\n});\n        ",
+      "body": [
+        "O teste acima não se preocupa em reimplementar a lógica de cálculo do total — isso é responsabilidade de um teste unitário da classe Pedido. Ele verifica a fronteira real: o que foi salvo é o que volta, com a estrutura correta, contra um banco real.",
+        "O banco descartável isola a execução e permite que o teste rode em paralelo sem colidir com outros. Quando o banco real não está disponível no ambiente de CI, uma alternativa razoável é usar um contêiner do mesmo motor, mantendo o contrato o mais próximo possível da produção."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Como distribuir unitário, integração e ponta a ponta",
+      "body": [
+        "Não existe uma proporção universal, mas uma heurística útil é a pirâmide de testes: muitos testes unitários na base, uma camada menor de integração no meio e poucos testes ponta a ponta no topo. A pirâmide reflete custo e velocidade: quanto mais alto, mais caro e lento, então menos testes.",
+        "A regra prática é empurrar a verificação para a camada mais baixa que ainda a cobre. Se uma regra pode ser testada em nível unitário, não a teste em integração; se uma integração pode ser verificada sem subir a interface inteira, não a teste ponta a ponta.",
+        "Os testes ponta a ponta devem cobrir apenas os fluxos críticos de negócio — o caminho feliz de uma compra, um login, um pagamento — e não cada variação. As variações e casos de borda pertencem às camadas mais baixas, onde rodam rápido e são baratos de manter."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Mantendo a suíte rápida e sustentável",
+      "body": [
+        "A velocidade da suíte é uma decisão de arquitetura, não um acidente. Separe os testes por categoria e permita rodar apenas a camada que interessa no momento: unitários a cada salvamento, integração antes de abrir uma mudança, e ponta a ponta na integração contínua ou antes de liberar.",
+        "Paralelize onde o isolamento permitir. Bancos e serviços descartáveis por teste tornam a paralelização segura. Evite compartilhar um único banco entre todos os testes, porque isso serializa a execução e reintroduz o acoplamento de estado.",
+        "Revise periodicamente a suíte. Testes de integração que testam a mesma coisa que um unitário, ou que quebram por motivos irrelevantes, devem ser removidos ou ajustados. Uma suíte enxuta e confiável vale mais do que uma grande e instável."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Conclusão",
+      "body": [
+        "Testes de integração eficazes não são sobre quantidade, e sim sobre escolher as fronteiras certas e mantê-las determinísticas. Ao focar em contratos reais, isolar o estado de cada teste e distribuir a suíte em camadas, você ganha confiança de que o sistema funciona em conjunto sem sacrificar a velocidade do feedback.",
+        "O objetivo final é um ciclo de desenvolvimento em que a suíte roda com frequência, falha por motivos claros e dá segurança para mudar o código. Quando a suíte é lenta ou instável, o time deixa de confiar nela — e aí a qualidade se perde, independentemente de quantos testes existam."
+      ]
+    }
+  ],
+  "references": [
+    "Martin Fowler — Test Pyramid",
+    "Martin Fowler — IntegrationTest (bliki)",
+    "Kent Beck — Test-Driven Development: By Example",
+    "Google — Software Engineering at Google (capítulo sobre testes em escala)"
+  ],
+  "quiz": [
+    {
+      "question": "Qual é o principal papel de um teste de integração?",
+      "options": [
+        "Substituir todos os testes unitários de uma classe.",
+        "Verificar que componentes reais funcionam juntos em contratos e fronteiras.",
+        "Testar apenas a interface visual da aplicação.",
+        "Garantir que o código compila sem erros."
+      ],
+      "correctIndex": 1,
+      "explanation": "O teste de integração foca nas fronteiras entre componentes, complementando os testes unitários em vez de substituí-los."
+    },
+    {
+      "question": "O que caracteriza um teste flaky?",
+      "options": [
+        "Um teste que roda muito rápido.",
+        "Um teste que nunca falha.",
+        "Um teste que passa ou falha sem mudança no código.",
+        "Um teste que usa apenas mocks."
+      ],
+      "correctIndex": 2,
+      "explanation": "Flakiness é a variação de resultado sem alteração no código, geralmente causada por estado compartilhado ou dependências não controladas."
+    },
+    {
+      "question": "Qual prática ajuda a manter o determinismo dos testes de integração?",
+      "options": [
+        "Depender da ordem de execução dos testes.",
+        "Compartilhar um único banco entre todos os testes.",
+        "Preparar estado isolado para cada teste e evitar depender do relógio real.",
+        "Esperar tempos fixos até o sistema ficar pronto."
+      ],
+      "correctIndex": 2,
+      "explanation": "Isolamento de estado e injeção de relógio evitam vazamentos e variação entre execuções."
+    },
+    {
+      "question": "Segundo a pirâmide de testes, onde deve ficar a maior parte da suíte?",
+      "options": [
+        "Em testes ponta a ponta.",
+        "Em testes unitários.",
+        "Em testes manuais.",
+        "Em testes de interface."
+      ],
+      "correctIndex": 1,
+      "explanation": "Os testes unitários são os mais rápidos e baratos, por isso formam a base mais larga da pirâmide."
+    },
+    {
+      "question": "Quando um teste ponta a ponta é mais adequado?",
+      "options": [
+        "Para cobrir cada variação e caso de borda.",
+        "Para verificar apenas os fluxos críticos de negócio.",
+        "Para substituir os testes de integração.",
+        "Para testar a lógica interna de uma função."
+      ],
+      "correctIndex": 1,
+      "explanation": "Testes ponta a ponta são caros e lentos, então devem cobrir apenas os caminhos críticos, deixando variações para camadas mais baixas."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "O que é a pirâmide de testes?",
+      "answer": "Um modelo que distribui a suíte em camadas: muitos testes unitários na base, menos de integração no meio e poucos ponta a ponta no topo."
+    },
+    {
+      "question": "O que é um teste flaky?",
+      "answer": "Um teste que alterna entre passar e falhar sem que o código sob teste tenha mudado."
+    },
+    {
+      "question": "Por que isolar o estado entre testes é importante?",
+      "answer": "Porque impede que um teste influencie outro, mantendo a suíte determinística e permitindo execução em paralelo."
+    },
+    {
+      "question": "Qual a diferença entre teste de integração e ponta a ponta?",
+      "answer": "Integração verifica componentes reais em uma fronteira específica; ponta a ponta exercita o sistema inteiro, do início ao fim de um fluxo."
+    },
+    {
+      "question": "O que é uma condição de prontidão em vez de espera fixa?",
+      "answer": "Uma verificação explícita de que o sistema está pronto, evitando sleeps fixos que tornam o teste lento e instável."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Devo usar um banco real ou um mock nos testes de integração?",
+      "answer": "Sempre que possível, use o motor real (ou um equivalente fiel em contêiner) para validar o contrato de verdade. Mocks escondem incompatibilidades de mapeamento e sintaxe que só aparecem contra o banco real."
+    },
+    {
+      "question": "Quantos testes ponta a ponta devo manter?",
+      "answer": "Poucos, cobrindo apenas os fluxos críticos. Cada teste ponta a ponta é caro e frágil; variações e casos de borda devem ser empurrados para as camadas mais baixas."
+    },
+    {
+      "question": "Como lidar com um teste de integração que falha por causa de um serviço externo indisponível?",
+      "answer": "Evite depender de serviços externos reais nos testes. Use contratos, stubs controlados ou uma instância local do serviço, para que a suíte não fique refém de disponibilidade de terceiros."
+    }
+  ]
+}

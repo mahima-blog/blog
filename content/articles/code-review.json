@@ -1,0 +1,173 @@
+{
+  "slug": "code-review",
+  "title": "Code review que melhora o código sem virar gargalo",
+  "category": "Colaboração técnica",
+  "readTime": "13 minutos",
+  "published": "2026-10-23",
+  "summary": "Como preparar mudanças revisáveis, priorizar comentários por impacto e separar preferências pessoais de problemas concretos, mantendo um fluxo de revisão saudável.",
+  "sections": [
+    {
+      "type": "content",
+      "heading": "Para que serve uma revisão de código",
+      "body": [
+        "A revisão de código tem três objetivos que se reforçam: encontrar defeitos, compartilhar conhecimento e manter a qualidade estrutural do sistema. Quando um desses objetivos domina e os outros desaparecem, a revisão se torna burocrática ou ineficaz.",
+        "É um erro tratar a revisão apenas como uma caça a bugs. Defeitos são importantes, mas a revisão também é o momento em que o conhecimento sobre o código se espalha pelo time e em que decisões de design são questionadas antes de se consolidarem.",
+        "O valor da revisão está na conversa, não no ato de aprovar. Uma boa revisão deixa tanto quem escreveu quanto quem revisou com uma compreensão melhor do sistema."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Preparando uma mudança revisável",
+      "body": [
+        "A qualidade da revisão começa antes dela: na forma como a mudança é preparada. Mudanças pequenas e focadas são mais fáceis de revisar e menos propensas a esconder defeitos. Uma mudança que resolve três problemas diferentes deveria, idealmente, ser três mudanças.",
+        "A descrição da mudança deve explicar o contexto e a motivação, não apenas listar o que foi feito. O revisor precisa entender o problema que a mudança resolve e as decisões que o autor tomou, para avaliar se a solução faz sentido.",
+        "Separe mudanças mecânicas de mudanças de comportamento. Renomeações e reformatações devem vir em commits ou mudanças separadas das alterações de lógica, para que o revisor consiga distinguir o que é ruído do que é relevante."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Priorizando comentários por impacto",
+      "body": [
+        "Nem todo comentário tem o mesmo peso. O mais valioso é aquele que aponta um risco real: um bug, uma falha de segurança, um problema de dados ou uma decisão de design que vai custar caro. Esses comentários devem ser claros e prioritários.",
+        "Comentários sobre legibilidade e clareza vêm em segundo lugar: nomes confusos, lógica difícil de seguir, falta de contexto. Eles melhoram a manutenção, mas raramente bloqueiam a entrega.",
+        "Preferências pessoais — estilo, abordagens alternativas equivalentes, gostos de formatação — devem ser claramente sinalizadas como opcionais. Quando um comentário de preferência é apresentado com a mesma força de um comentário de risco, o autor não sabe o que precisa mudar e o que pode ignorar.",
+        "Uma técnica útil é rotular os comentários: \"bloqueador\", \"sugestão\" e \"opcional\". Isso comunica a expectativa e reduz a fricção de descobrir o que é obrigatório."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Exemplo: comentários com pesos diferentes",
+      "code": "\n// Bloqueador — risco real:\n// \"Esta consulta não usa o índice e varre a tabela inteira.\n//  Com o volume atual, isso vai degradar a listagem.\"\n\n// Sugestão — clareza:\n// \"O nome 'data' não deixa claro se é a data de criação\n//  ou de atualização. Que tal 'dataCriacao'?\"\n\n// Opcional — preferência:\n// \"Eu escreveria isso como reduce, mas o loop está claro.\n//  Fica a seu critério.\"\n        ",
+      "body": [
+        "O primeiro comentário aponta um problema de desempenho concreto que precisa ser resolvido. O segundo melhora a legibilidade e vale a pena considerar. O terceiro é uma preferência e deixa claro que não é obrigatório.",
+        "A distinção entre esses níveis permite que o autor priorize corretamente e não gaste energia em mudanças que não importam. Ela também reduz a ansiedade de \"o revisor quer que eu reescreva tudo\"."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Separando preferência de problema",
+      "body": [
+        "A regra prática é: se duas soluções são equivalentes em correção, desempenho e manutenibilidade, a escolha entre elas é preferência. Nesse caso, o comentário deve ser opcional. Se uma solução é objetivamente pior em algum desses eixos, é um problema, e o comentário deve explicar o porquê.",
+        "Evite o \"eu faria diferente\" sem justificativa. Quando você sugere uma alternativa, explique o ganho concreto: mais clareza, menos acoplamento, melhor desempenho. Se não há ganho concreto, talvez não haja comentário a fazer.",
+        "Lembre-se de que a revisão não é uma demonstração de conhecimento. O objetivo é melhorar o código, não provar que o revisor teria escrito de outra forma. Comentários que só sinalizam preferência pessoal corroem a confiança e tornam a revisão cansativa."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Mantendo o fluxo saudável",
+      "body": [
+        "A velocidade da revisão importa tanto quanto a qualidade. Uma revisão que demora dias para acontecer cria fila, contexto perdido e frustração. Revisões pequenas e frequentes, feitas logo após a abertura da mudança, são mais eficazes do que revisões longas e raras.",
+        "O tom dos comentários deve focar no código, não na pessoa. Em vez de \"você esqueceu de tratar o erro\", prefira \"este caminho não trata o erro\". Isso mantém a conversa técnica e reduz a defensividade.",
+        "Reconheça o que está bom, não apenas o que precisa mudar. Um comentário ocasional de reconhecimento mantém o equilíbrio e sinaliza que a revisão é uma parceria, não uma auditoria.",
+        "Quando houver discordância, busque o critério objetivo: correção, desempenho, manutenibilidade, consistência com o restante do código. Se não houver critério objetivo, a questão é preferência e não deve bloquear a mudança."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Conclusão",
+      "body": [
+        "Uma revisão de código útil equilibra rigor com fluidez. Ela exige mudanças pequenas e bem descritas, comentários priorizados por impacto e uma distinção clara entre problema e preferência.",
+        "Quando o fluxo é saudável, a revisão deixa de ser um gargalo e passa a ser um investimento: menos defeitos em produção, mais conhecimento compartilhado e um código que permanece compreensível ao longo do tempo."
+      ]
+    }
+  ],
+  "references": [
+    "Google — Engineering Practices Documentation: Code Review",
+    "Michaela Greiler — Code Review Book",
+    "Martin Fowler — refactoring e design incremental",
+    "SmartBear — Best Practices for Peer Code Review"
+  ],
+  "quiz": [
+    {
+      "question": "Qual é um dos objetivos centrais da revisão de código, além de encontrar defeitos?",
+      "options": [
+        "Medir a produtividade individual.",
+        "Compartilhar conhecimento e manter a qualidade estrutural.",
+        "Garantir que o código siga o estilo do revisor.",
+        "Substituir os testes automatizados."
+      ],
+      "correctIndex": 1,
+      "explanation": "A revisão também espalha conhecimento pelo time e questiona decisões de design antes de se consolidarem."
+    },
+    {
+      "question": "O que torna uma mudança mais fácil de revisar?",
+      "options": [
+        "Ser grande e resolver vários problemas de uma vez.",
+        "Ser pequena, focada e com descrição que explica contexto e motivação.",
+        "Conter apenas mudanças de formatação.",
+        "Não ter descrição para não enviesar o revisor."
+      ],
+      "correctIndex": 1,
+      "explanation": "Mudanças pequenas e bem descritas reduzem o risco de defeitos escondidos e facilitam a avaliação."
+    },
+    {
+      "question": "Qual tipo de comentário deve ter prioridade máxima?",
+      "options": [
+        "Preferências de estilo.",
+        "Comentários que apontam risco real, como bugs ou falhas de segurança.",
+        "Sugestões de nomes de variáveis.",
+        "Elogios ao código."
+      ],
+      "correctIndex": 1,
+      "explanation": "Comentários que apontam risco concreto são os mais valiosos e devem ser sinalizados como prioritários."
+    },
+    {
+      "question": "Quando uma diferença de abordagem é apenas preferência?",
+      "options": [
+        "Quando uma solução é objetivamente mais rápida.",
+        "Quando as soluções são equivalentes em correção, desempenho e manutenibilidade.",
+        "Quando o revisor tem mais experiência.",
+        "Quando o código não tem testes."
+      ],
+      "correctIndex": 1,
+      "explanation": "Se não há ganho objetivo em nenhum eixo, a escolha é preferência e não deve bloquear a mudança."
+    },
+    {
+      "question": "Qual prática mantém o fluxo de revisão saudável?",
+      "options": [
+        "Revisar apenas uma vez por semana.",
+        "Revisar mudanças pequenas com frequência e focar o comentário no código, não na pessoa.",
+        "Bloquear toda mudança que não siga o estilo pessoal do revisor.",
+        "Evitar reconhecer o que está bom."
+      ],
+      "correctIndex": 1,
+      "explanation": "Revisões pequenas e frequentes, com tom técnico e reconhecimento, mantêm o fluxo produtivo e a confiança."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Quais são os três objetivos da revisão de código?",
+      "answer": "Encontrar defeitos, compartilhar conhecimento e manter a qualidade estrutural do sistema."
+    },
+    {
+      "question": "Por que mudanças mecânicas devem vir separadas?",
+      "answer": "Para que o revisor distinga ruído (renomeações, formatação) de mudanças reais de comportamento."
+    },
+    {
+      "question": "O que é um comentário \"bloqueador\"?",
+      "answer": "Um comentário que aponta um risco real, como bug, falha de segurança ou problema de dados, que precisa ser resolvido."
+    },
+    {
+      "question": "Como distinguir problema de preferência?",
+      "answer": "Se há ganho objetivo em correção, desempenho ou manutenibilidade, é problema; se as soluções são equivalentes, é preferência."
+    },
+    {
+      "question": "Por que o tom do comentário deve focar no código?",
+      "answer": "Para manter a conversa técnica, reduzir a defensividade e preservar a confiança entre as pessoas."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Quem deve revisar o código?",
+      "answer": "Idealmente, pessoas com conhecimento do domínio e do sistema, mas a revisão também é uma forma de onboarding. Rotacionar revisores espalha conhecimento e evita que a revisão dependa de uma única pessoa."
+    },
+    {
+      "question": "Como lidar com um comentário de preferência que não concordo?",
+      "answer": "Se não há critério objetivo, a questão é preferência e não deve bloquear. Você pode explicar sua escolha e seguir em frente; o importante é não tratar preferência como defeito."
+    },
+    {
+      "question": "A revisão substitui os testes?",
+      "answer": "Não. Testes automatizados e revisão são complementares: os testes verificam comportamento de forma repetível, e a revisão captura questões de design, clareza e riscos que os testes não enxergam."
+    }
+  ]
+}

@@ -1,0 +1,172 @@
+{
+  "slug": "api-evolution",
+  "title": "Como evoluir uma API mantendo compatibilidade",
+  "category": "Desenvolvimento de APIs",
+  "readTime": "14 minutos",
+  "published": "2026-10-23",
+  "summary": "Compatibilidade, mudanças aditivas e incompatíveis, versionamento e estratégias de migração de consumidores, com exemplos conceituais de alterações em campos, parâmetros e respostas.",
+  "sections": [
+    {
+      "type": "content",
+      "heading": "Por que a compatibilidade é um problema de contrato",
+      "body": [
+        "Uma API é um contrato entre produtores e consumidores. Quando o contrato muda de forma incompatível, todos os consumidores que dependem dele podem quebrar ao mesmo tempo — e, em muitos casos, os consumidores estão fora do seu controle, em sistemas de terceiros ou em versões antigas de aplicativos.",
+        "O custo de uma quebra não é apenas técnico. É retrabalho, incidentes, coordenação entre equipes e, em APIs públicas, perda de confiança dos usuários. Por isso, a evolução de uma API exige pensar na compatibilidade antes de mudar, não depois de quebrar.",
+        "A pergunta central é sempre: esta mudança é aditiva ou incompatível? Mudanças aditivas podem ser feitas sem coordenar com os consumidores; mudanças incompatíveis exigem um plano de migração."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Mudanças aditivas: o caminho seguro",
+      "body": [
+        "Uma mudança aditiva acrescenta algo sem remover ou alterar o significado do que já existe. Adicionar um campo novo a uma resposta é aditivo: consumidores antigos simplesmente ignoram o campo que não conhecem. Adicionar um parâmetro opcional a uma requisição também é aditivo, desde que tenha um valor padrão razoável.",
+        "Adicionar um novo endpoint é sempre aditivo. Adicionar um novo valor a uma enumeração pode ser aditivo, mas é arriscado se os consumidores validam estritamente contra uma lista fechada. Nesses casos, o valor novo pode ser rejeitado por consumidores que não o conhecem.",
+        "A regra prática é: aditivo é seguro quando consumidores antigos continuam funcionando sem mudança. Se há qualquer cenário em que um consumidor antigo quebra, a mudança não é realmente aditiva."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Exemplo: mudança aditiva em uma resposta",
+      "code": "\n// Resposta original\n{\n  \"id\": 1234,\n  \"nome\": \"Caneta\",\n  \"preco\": 2.5\n}\n\n// Resposta após mudança aditiva: novo campo opcional\n{\n  \"id\": 1234,\n  \"nome\": \"Caneta\",\n  \"preco\": 2.5,\n  \"categoria\": \"papelaria\"\n}\n\n// Consumidores antigos ignoram \"categoria\" e continuam funcionando.\n        ",
+      "body": [
+        "O campo novo não muda o significado dos campos existentes, então nenhum consumidor antigo quebra. Essa é a forma mais barata de evoluir uma API.",
+        "O cuidado está em não alterar o tipo ou o significado de um campo existente. Mudar \"preco\" de número para string, ou alterar a unidade de centavos para reais, é incompatível mesmo que o nome continue igual."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Mudanças incompatíveis e como reconhecê-las",
+      "body": [
+        "Remover um campo, renomear um campo, mudar o tipo de um campo ou alterar o significado de um valor são mudanças incompatíveis. Também são incompatíveis: tornar obrigatório um parâmetro que antes era opcional, remover um endpoint e mudar a semântica de um código de erro.",
+        "Uma armadilha comum é achar que \"ninguém usa esse campo\". Em APIs públicas ou com muitos consumidores, é difícil ter certeza. A ausência de uso observável não prova a ausência de dependência.",
+        "Outra armadilha é a mudança de comportamento silenciosa: o mesmo campo passa a retornar algo diferente. Isso é pior do que uma quebra explícita, porque não gera erro imediato — gera dados incorretos que só aparecem depois."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Versionamento e estratégias de migração",
+      "body": [
+        "Quando uma mudança incompatível é inevitável, a estratégia mais comum é o versionamento: expor uma nova versão da API e manter a antiga por um período de transição. Isso permite que os consumidores migrem no próprio ritmo, em vez de serem forçados a mudar de uma vez.",
+        "O versionamento pode ser feito por URL, por cabeçalho ou por tipo de mídia. Cada abordagem tem vantagens e custos, mas o princípio é o mesmo: dar aos consumidores uma janela de tempo para migrar sem quebra abrupta.",
+        "A migração em etapas é outra estratégia: em vez de remover um campo de uma vez, deprecie-o primeiro, comunique a remoção futura e só então remova. A depreciação cria um período em que a mudança pode ser observada e planejada.",
+        "O custo de manter versões antigas é real: mais código, mais testes, mais superfície de suporte. Por isso, versionamento não deve ser usado para cada pequena mudança, mas reservado para quebras que realmente exigem transição."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Comunicando e planejando a evolução",
+      "body": [
+        "A compatibilidade técnica é apenas metade do problema. A outra metade é a comunicação: os consumidores precisam saber o que mudou, o que é aditivo, o que está depreciado e quando algo será removido. Sem isso, até uma mudança aditiva pode gerar surpresa e desconfiança.",
+        "Mantenha um changelog claro e versionado, com a distinção explícita entre mudanças aditivas, depreciações e remoções. Documente o período de transição e o que os consumidores devem fazer.",
+        "Planeje a evolução como um processo contínuo, não como eventos isolados. Uma API que evolui em pequenos passos aditivos, com depreciações bem comunicadas, é mais saudável do que uma que acumula quebras e faz grandes migrações de tempos em tempos."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Conclusão",
+      "body": [
+        "Evoluir uma API sem quebrar consumidores é, antes de tudo, uma disciplina de contrato. Distinguir mudanças aditivas de incompatíveis, reservar versionamento para quebras reais e comunicar cada passo com clareza permite que a API cresça sem penalizar quem depende dela.",
+        "O objetivo não é nunca mudar, e sim mudar de forma que o custo recaia de maneira previsível e gerenciável — preservando a confiança dos consumidores e a estabilidade dos sistemas que se apoiam na API."
+      ]
+    }
+  ],
+  "references": [
+    "Google — API Design Guide (compatibilidade e versionamento)",
+    "Martin Fowler — refactoring de interfaces e compatibilidade",
+    "Postel's Law (Robustness Principle) — contexto e críticas",
+    "Stripe — API versioning (documentação pública de estratégia de evolução)"
+  ],
+  "quiz": [
+    {
+      "question": "O que caracteriza uma mudança aditiva em uma API?",
+      "options": [
+        "Remover um campo que ninguém usa.",
+        "Acrescentar algo sem quebrar consumidores antigos.",
+        "Renomear um campo existente.",
+        "Mudar o tipo de um campo."
+      ],
+      "correctIndex": 1,
+      "explanation": "Mudanças aditivas acrescentam sem alterar o que já existe, permitindo que consumidores antigos continuem funcionando."
+    },
+    {
+      "question": "Qual das opções é uma mudança incompatível?",
+      "options": [
+        "Adicionar um campo novo a uma resposta.",
+        "Adicionar um endpoint novo.",
+        "Mudar o tipo de um campo existente de número para string.",
+        "Adicionar um parâmetro opcional com valor padrão."
+      ],
+      "correctIndex": 2,
+      "explanation": "Mudar o tipo de um campo quebra consumidores que esperavam o tipo anterior, mesmo mantendo o nome."
+    },
+    {
+      "question": "Por que a mudança de comportamento silenciosa é perigosa?",
+      "options": [
+        "Porque gera um erro imediato e claro.",
+        "Porque não gera erro imediato, produzindo dados incorretos que só aparecem depois.",
+        "Porque é sempre mais rápida de implementar.",
+        "Porque nunca afeta os consumidores."
+      ],
+      "correctIndex": 1,
+      "explanation": "Mudar o significado de um campo sem quebrar explicitamente pode corromper dados de forma silenciosa e tardia."
+    },
+    {
+      "question": "Qual é o propósito do versionamento em uma API?",
+      "options": [
+        "Evitar qualquer mudança futura.",
+        "Dar aos consumidores uma janela de tempo para migrar sem quebra abrupta.",
+        "Remover campos antigos imediatamente.",
+        "Eliminar a necessidade de testes."
+      ],
+      "correctIndex": 1,
+      "explanation": "O versionamento permite transição gradual, mantendo a versão antiga enquanto os consumidores migram."
+    },
+    {
+      "question": "O que a depreciação de um campo permite?",
+      "options": [
+        "Remover o campo imediatamente.",
+        "Criar um período de transição em que a remoção pode ser comunicada e planejada.",
+        "Esconder o campo dos consumidores.",
+        "Mudar o tipo do campo sem aviso."
+      ],
+      "correctIndex": 1,
+      "explanation": "Depreciar primeiro comunica a intenção de remover e dá tempo para os consumidores se adaptarem."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "O que é uma mudança aditiva?",
+      "answer": "Uma mudança que acrescenta algo sem remover ou alterar o significado do que já existe, mantendo consumidores antigos funcionando."
+    },
+    {
+      "question": "Dê um exemplo de mudança incompatível.",
+      "answer": "Remover ou renomear um campo, mudar seu tipo ou alterar o significado de um valor existente."
+    },
+    {
+      "question": "O que é versionamento de API?",
+      "answer": "Expor uma nova versão da API e manter a antiga por um período, permitindo migração gradual dos consumidores."
+    },
+    {
+      "question": "O que é depreciação de um campo?",
+      "answer": "Marcar um campo como obsoleto e comunicar sua remoção futura, criando uma janela de transição."
+    },
+    {
+      "question": "Por que adicionar um valor a uma enumeração pode ser arriscado?",
+      "answer": "Porque consumidores que validam contra uma lista fechada podem rejeitar o valor novo que não conhecem."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Devo versionar toda mudança na API?",
+      "answer": "Não. Versionamento tem custo de manutenção e deve ser reservado para quebras reais. Mudanças aditivas podem ser feitas na mesma versão, com depreciações bem comunicadas quando necessário."
+    },
+    {
+      "question": "Como saber se um campo pode ser removido com segurança?",
+      "answer": "A ausência de uso observável não é prova. Instrumente o uso, comunique a depreciação e dê uma janela de transição antes de remover. Em APIs públicas, a margem de segurança deve ser maior."
+    },
+    {
+      "question": "Qual a diferença entre compatibilidade e versionamento?",
+      "answer": "Compatibilidade é a propriedade de uma mudança não quebrar consumidores; versionamento é uma estratégia para lidar com mudanças que quebram, expondo uma nova versão enquanto a antiga permanece."
+    }
+  ]
+}

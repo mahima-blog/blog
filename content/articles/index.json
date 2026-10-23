@@ -17,6 +17,96 @@
       "readTime": "13 minutos",
       "published": "2026-10-22",
       "summary": "Um guia prático para entender SRP, OCP, LSP, ISP e DIP sem transformá-los em dogmas vazios de contexto."
+    },
+    {
+      "slug": "integration-tests",
+      "file": "integration-tests.json",
+      "title": "Testes de integração eficazes",
+      "category": "Testes e qualidade",
+      "readTime": "14 minutos",
+      "published": "2026-10-23",
+      "summary": "Como escolher as integrações que merecem teste, preparar dependências de forma determinística e equilibrar testes unitários, de integração e ponta a ponta sem travar o feedback."
+    },
+    {
+      "slug": "technical-debt",
+      "file": "technical-debt.json",
+      "title": "Dívida técnica",
+      "category": "Manutenção de software",
+      "readTime": "13 minutos",
+      "published": "2026-10-23",
+      "summary": "Como reconhecer sinais de dívida técnica, avaliar seu impacto real e dividir melhorias em mudanças pequenas, diferenciando dívida consciente de acúmulo acidental."
+    },
+    {
+      "slug": "observability",
+      "file": "observability.json",
+      "title": "Observabilidade na prática",
+      "category": "Operações e confiabilidade",
+      "readTime": "14 minutos",
+      "published": "2026-10-23",
+      "summary": "O papel de logs, métricas e rastreamento distribuído em uma investigação, com as perguntas que cada sinal responde e cuidados para não registrar dados sensíveis."
+    },
+    {
+      "slug": "code-review",
+      "file": "code-review.json",
+      "title": "Code review útil",
+      "category": "Colaboração técnica",
+      "readTime": "13 minutos",
+      "published": "2026-10-23",
+      "summary": "Como preparar mudanças revisáveis, priorizar comentários por impacto e separar preferências pessoais de problemas concretos, mantendo um fluxo de revisão saudável."
+    },
+    {
+      "slug": "api-evolution",
+      "file": "api-evolution.json",
+      "title": "Evolução de APIs",
+      "category": "Desenvolvimento de APIs",
+      "readTime": "14 minutos",
+      "published": "2026-10-23",
+      "summary": "Compatibilidade, mudanças aditivas e incompatíveis, versionamento e estratégias de migração de consumidores, com exemplos de alterações em campos e respostas."
+    },
+    {
+      "slug": "db-migrations",
+      "file": "db-migrations.json",
+      "title": "Migrações de banco seguras",
+      "category": "Dados e confiabilidade",
+      "readTime": "14 minutos",
+      "published": "2026-10-23",
+      "summary": "Cuidados para mudanças de esquema com a aplicação em uso: compatibilidade entre versões, implantação em etapas, validação e plano de recuperação."
+    },
+    {
+      "slug": "feature-flags",
+      "file": "feature-flags.json",
+      "title": "Feature flags",
+      "category": "Práticas de desenvolvimento",
+      "readTime": "13 minutos",
+      "published": "2026-10-23",
+      "summary": "Como usar feature flags para liberar mudanças gradualmente e controlar a ativação, tratando riscos como combinações difíceis de testar e flags esquecidas."
+    },
+    {
+      "slug": "ci-pipelines",
+      "file": "ci-pipelines.json",
+      "title": "CI eficiente",
+      "category": "Ferramentas e qualidade",
+      "readTime": "13 minutos",
+      "published": "2026-10-23",
+      "summary": "Como organizar verificações automatizadas, paralelismo, cache e diagnóstico de falhas intermitentes para priorizar feedback rápido e resultados reproduzíveis."
+    },
+    {
+      "slug": "dependency-management",
+      "file": "dependency-management.json",
+      "title": "Gestão de dependências",
+      "category": "Ferramentas e manutenção",
+      "readTime": "13 minutos",
+      "published": "2026-10-23",
+      "summary": "Como inventariar dependências, avaliar atualizações, usar automação com revisão e validar mudanças com testes, diferenciando atualizações rotineiras de migrações."
+    },
+    {
+      "slug": "technical-docs",
+      "file": "technical-docs.json",
+      "title": "Documentação técnica útil",
+      "category": "Práticas de desenvolvimento",
+      "readTime": "13 minutos",
+      "published": "2026-10-23",
+      "summary": "O que documentar — decisões arquiteturais, configuração e procedimentos operacionais — e como manter esses registros próximos ao código, evitando obsolescência."
     }
   ]
 }

@@ -1,0 +1,162 @@
+{
+  "slug": "technical-docs",
+  "title": "Documentação útil: registre decisões e instruções que mudam pouco",
+  "category": "Práticas de desenvolvimento",
+  "readTime": "13 minutos",
+  "published": "2026-10-23",
+  "summary": "O que documentar — decisões arquiteturais, configuração e procedimentos operacionais — e como manter esses registros próximos ao código, evitando documentação redundante ou rapidamente desatualizada.",
+  "sections": [
+    {
+      "type": "content",
+      "heading": "Documentação que vale a pena é a que muda pouco",
+      "body": [
+        "O maior problema da documentação técnica não é a falta, e sim a obsolescência. Documentação que fica desatualizada é pior do que nenhuma, porque inspira confiança em informações erradas. O critério central para decidir o que documentar é a estabilidade: vale registrar o que muda pouco e custa caro reaprender.",
+        "Decisões arquiteturais, configurações de ambiente e procedimentos operacionais são candidatos naturais. Eles mudam com pouca frequência e, quando alguém precisa deles, o custo de redescobrir é alto. Em contraste, detalhes que mudam a cada semana — como o estado atual de um ticket — não pertencem à documentação.",
+        "A pergunta prática é: se esta informação se perder, quanto custa reconstruí-la, e com que frequência ela muda? Quanto maior o custo de reconstrução e menor a frequência de mudança, mais ela merece ser documentada."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "O que documentar: decisões, configuração e operação",
+      "body": [
+        "Decisões arquiteturais são o tipo mais valioso. Quando uma escolha de design não é óbvia — por que usamos esta abordagem e não aquela — registrar o contexto e as alternativas consideradas evita que decisões sejam revertidas por quem não conhece a história.",
+        "Configuração e ambiente também merecem registro: como preparar o ambiente de desenvolvimento, quais variáveis são necessárias, como o sistema se conecta às suas dependências. Isso reduz o tempo de onboarding e evita que o conhecimento fique preso na cabeça de uma pessoa.",
+        "Procedimentos operacionais — como fazer um deploy, como responder a um incidente, como restaurar um backup — são críticos justamente quando a pressão é alta. Nesses momentos, ninguém tem tempo de redescobrir o passo a passo."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Exemplo: um registro de decisão arquitetural",
+      "code": "\n# ADR: Persistência de pedidos\n\n## Contexto\nO sistema precisava armazenar pedidos com consulta por cliente e data.\n\n## Decisão\nUsar um banco relacional, com índice composto por (cliente, data).\n\n## Alternativas consideradas\n- Banco de documentos: flexível, mas consultas agregadas seriam mais lentas.\n- Armazenamento em arquivos: simples, mas sem suporte a consultas.\n\n## Consequências\nConsultas por cliente e data são rápidas; mudanças de esquema exigem migração.\n        ",
+      "body": [
+        "O registro captura não apenas a decisão, mas o contexto e as alternativas descartadas. Isso permite que, meses depois, alguém entenda por que a escolha foi feita e evite repetir uma discussão já resolvida.",
+        "Esse formato — contexto, decisão, alternativas e consequências — é conhecido como ADR (Architecture Decision Record) e é uma das formas mais eficazes de documentar decisões."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Mantendo a documentação próxima ao código",
+      "body": [
+        "Documentação que vive longe do código tende a ficar desatualizada, porque ninguém a vê no momento em que faz a mudança. Manter os registros no mesmo repositório, junto ao código que descrevem, aumenta a chance de serem atualizados quando o código muda.",
+        "Isso também permite revisar a documentação junto com o código: uma mudança que altera uma decisão ou uma configuração deve atualizar o registro correspondente na mesma solicitação. A revisão de código passa a incluir a revisão da documentação.",
+        "Documentação próxima ao código não precisa ser extensa. Um README curto por módulo, um arquivo de decisões por área e comentários que explicam o porquê (não o quê) costumam ser suficientes e muito mais úteis do que um manual centralizado e desatualizado."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Evitando redundância e obsolescência",
+      "body": [
+        "A redundância é inimiga da manutenção. A mesma informação em dois lugares é uma informação que vai divergir. Escolha uma fonte de verdade para cada fato e referencie-a nos demais lugares, em vez de copiá-la.",
+        "Prefira documentar o \"porquê\" e o \"como\", não o \"o quê\". O código já diz o que faz; a documentação deve explicar por que faz daquele jeito e como operar. Documentar o que o código faz é redundante e fica desatualizada na primeira refatoração.",
+        "Revise a documentação periodicamente ou, melhor, torne sua atualização parte do fluxo de mudança. Uma documentação que não tem dono nem momento de revisão inevitavelmente apodrece. Atribua a responsabilidade e o gatilho de atualização."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Conclusão",
+      "body": [
+        "Documentação útil não é sobre quantidade, e sim sobre escolher o que registrar e mantê-lo atualizado. Decisões, configuração e procedimentos operacionais — informações estáveis e caras de redescobrir — são o núcleo do que vale documentar.",
+        "Ao manter esses registros próximos ao código, revisá-los junto com as mudanças e evitar redundância, o time reduz a dependência de conhecimento tácito e facilita o onboarding, a manutenção e a operação. A documentação deixa de ser um fardo e passa a ser um ativo."
+      ]
+    }
+  ],
+  "references": [
+    "Michael Nygard — Documenting Architecture Decisions (ADR)",
+    "Google — Engineering Practices Documentation",
+    "Write the Docs — guias sobre documentação técnica",
+    "Diátaxis — framework para organização de documentação"
+  ],
+  "quiz": [
+    {
+      "question": "Qual é o critério central para decidir o que documentar?",
+      "options": [
+        "A quantidade de texto que já existe.",
+        "A estabilidade da informação e o custo de reconstruí-la.",
+        "A popularidade do assunto.",
+        "O tamanho do arquivo."
+      ],
+      "correctIndex": 1,
+      "explanation": "Vale documentar o que muda pouco e custa caro reaprender, como decisões e procedimentos."
+    },
+    {
+      "question": "Por que documentação desatualizada é pior que nenhuma?",
+      "options": [
+        "Porque ocupa espaço em disco.",
+        "Porque inspira confiança em informações erradas.",
+        "Porque é mais difícil de escrever.",
+        "Porque não afeta ninguém."
+      ],
+      "correctIndex": 1,
+      "explanation": "Informação errada apresentada como verdade é mais perigosa do que a ausência de informação."
+    },
+    {
+      "question": "O que um ADR registra?",
+      "options": [
+        "O estado atual de cada ticket.",
+        "Contexto, decisão, alternativas consideradas e consequências de uma escolha arquitetural.",
+        "A lista de todos os commits.",
+        "O código fonte completo."
+      ],
+      "correctIndex": 1,
+      "explanation": "O ADR captura o porquê de uma decisão e as alternativas descartadas, preservando o contexto."
+    },
+    {
+      "question": "Por que manter a documentação próxima ao código?",
+      "options": [
+        "Para reduzir o tamanho do repositório.",
+        "Para aumentar a chance de ser atualizada quando o código muda e permitir revisão conjunta.",
+        "Para evitar que outras pessoas a leiam.",
+        "Para centralizar tudo em um manual."
+      ],
+      "correctIndex": 1,
+      "explanation": "Documentação próxima ao código é vista no momento da mudança e pode ser revisada junto com ela."
+    },
+    {
+      "question": "O que a documentação deve preferir explicar?",
+      "options": [
+        "O que o código faz, linha por linha.",
+        "O porquê e o como, em vez do quê.",
+        "Apenas a sintaxe da linguagem.",
+        "O nome de cada variável."
+      ],
+      "correctIndex": 1,
+      "explanation": "O código já diz o que faz; a documentação agrega valor explicando o porquê e o como operar."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Qual é o critério para documentar?",
+      "answer": "Estabilidade da informação e custo de reconstruí-la: documente o que muda pouco e custa caro reaprender."
+    },
+    {
+      "question": "O que é um ADR?",
+      "answer": "Um registro de decisão arquitetural com contexto, decisão, alternativas consideradas e consequências."
+    },
+    {
+      "question": "Quais são os três tipos de documentação mais valiosos?",
+      "answer": "Decisões arquiteturais, configuração/ambiente e procedimentos operacionais."
+    },
+    {
+      "question": "Por que evitar redundância na documentação?",
+      "answer": "Porque a mesma informação em dois lugares tende a divergir; escolha uma fonte de verdade por fato."
+    },
+    {
+      "question": "O que a documentação deve explicar em vez do \"o quê\"?",
+      "answer": "O \"porquê\" e o \"como\", já que o código já expressa o que faz."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Documentação extensa é sinal de qualidade?",
+      "answer": "Não. Documentação útil é enxuta e atualizada. Muito texto que ninguém lê ou que fica obsoleto é custo, não ativo. O valor está na relevância e na manutenção, não no volume."
+    },
+    {
+      "question": "Como garantir que a documentação não fique desatualizada?",
+      "answer": "Atualize-a junto com as mudanças, revise-a na revisão de código e atribua um dono e um gatilho de atualização. Documentação sem dono inevitavelmente apodrece."
+    },
+    {
+      "question": "Comentários no código substituem a documentação?",
+      "answer": "Comentários explicam o porquê em um ponto específico, mas não substituem registros de decisão, configuração e procedimentos. São complementares, com propósitos diferentes."
+    }
+  ]
+}
