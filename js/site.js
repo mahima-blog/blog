@@ -11,6 +11,34 @@ function formatDate(value) {
   return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long' }).format(date);
 }
 
+/* ---------- Tema claro/escuro ---------- */
+function initTheme() {
+  const toggle = document.querySelector('.theme-toggle');
+  if (!toggle) return;
+
+  const stored = localStorage.getItem('mahima-theme');
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = stored || (prefersDark ? 'dark' : 'light');
+
+  applyTheme(theme);
+
+  toggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('mahima-theme', next);
+  });
+}
+
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+}
+
+/* ---------- Página inicial ---------- */
 function renderHomeArticles() {
   const listNode = document.getElementById('article-list');
   if (!listNode) return;
@@ -18,12 +46,12 @@ function renderHomeArticles() {
   listNode.innerHTML = articles
     .map(
       (article) => `
-        <article class="article-card">
+        <article class="article-card" data-search="${normalize(article.title + ' ' + article.category + ' ' + article.summary)}">
           <div class="card-topline">
             <span class="pill">${article.category}</span>
             <span>${article.readTime}</span>
           </div>
-          <h3>${article.title}</h3>
+          <h3><a href="./article.html?slug=${article.slug}">${article.title}</a></h3>
           <p>${article.summary}</p>
           <div class="card-meta">
             <span>Publicado em ${formatDate(article.published)}</span>
@@ -35,6 +63,30 @@ function renderHomeArticles() {
     .join('');
 }
 
+function initSearch() {
+  const input = document.getElementById('search-input');
+  const empty = document.getElementById('search-empty');
+  if (!input) return;
+
+  input.addEventListener('input', () => {
+    const query = normalize(input.value.trim());
+    const cards = document.querySelectorAll('.article-card');
+    let visible = 0;
+
+    cards.forEach((card) => {
+      const haystack = card.dataset.search || '';
+      const match = !query || haystack.includes(query);
+      card.style.display = match ? '' : 'none';
+      if (match) visible += 1;
+    });
+
+    if (empty) {
+      empty.style.display = visible === 0 ? 'block' : 'none';
+    }
+  });
+}
+
+/* ---------- Página de artigo ---------- */
 function renderArticlePage() {
   const article = getCurrentArticle();
   const heroNode = document.getElementById('article-hero');
@@ -165,11 +217,38 @@ function renderArticlePage() {
           </div>
         </section>
       </article>
+      ${renderArticleNav(article)}
     </div>
   `;
 
   bindQuizHandlers();
   bindFlashcardHandlers();
+}
+
+function renderArticleNav(current) {
+  const index = articles.findIndex((a) => a.slug === current.slug);
+  if (index === -1) return '';
+
+  const prev = articles[index - 1];
+  const next = articles[index + 1];
+
+  return `
+    <nav class="article-nav" aria-label="Navegação entre artigos">
+      ${prev
+        ? `<a class="article-nav-link prev" href="./article.html?slug=${prev.slug}">
+            <span class="article-nav-label">← Anterior</span>
+            <span class="article-nav-title">${prev.title}</span>
+          </a>`
+        : '<span></span>'}
+      <a class="article-nav-all" href="./index.html#artigos">Todos os artigos</a>
+      ${next
+        ? `<a class="article-nav-link next" href="./article.html?slug=${next.slug}">
+            <span class="article-nav-label">Próximo →</span>
+            <span class="article-nav-title">${next.title}</span>
+          </a>`
+        : '<span></span>'}
+    </nav>
+  `;
 }
 
 function bindQuizHandlers() {
@@ -228,8 +307,19 @@ function escapeHtml(value) {
     .replace(/'/g, '&#039;');
 }
 
+function normalize(value) {
+  return String(value)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+/* ---------- Inicialização ---------- */
+initTheme();
+
 if (document.getElementById('article-list')) {
   renderHomeArticles();
+  initSearch();
 }
 
 if (document.getElementById('article-content')) {
