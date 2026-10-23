@@ -1,5 +1,6 @@
 let articles = [];
 let currentArticle = null;
+let activeCategory = 'all';
 
 function formatDate(value) {
   const date = new Date(`${value}T00:00:00`);
@@ -144,7 +145,7 @@ function renderHomeArticles() {
   listNode.innerHTML = articles
     .map(
       (article) => `
-        <article class="article-card" data-search="${escapeHtml(normalize(`${article.title} ${article.category} ${article.summary}`))}">
+        <article class="article-card" data-category="${escapeHtml(slugify(article.category))}" data-search="${escapeHtml(normalize(`${article.title} ${article.category} ${article.summary}`))}">
           <div class="card-topline">
             <span class="pill">${escapeHtml(article.category)}</span>
             <span>${escapeHtml(article.readTime)}</span>
@@ -161,27 +162,118 @@ function renderHomeArticles() {
     .join('');
 }
 
+function renderCategoryFilters() {
+  const filtersNode = document.getElementById('category-filters');
+  if (!filtersNode) return;
+
+  const categories = buildCategories(articles);
+
+  const allButton = `
+    <button class="category-filter${activeCategory === 'all' ? ' active' : ''}" type="button" data-category="all">
+      Todos
+      <span class="category-filter-count">${articles.length}</span>
+    </button>
+  `;
+
+  const categoryButtons = categories
+    .map(
+      (category) => `
+        <button class="category-filter${activeCategory === category.slug ? ' active' : ''}" type="button" data-category="${escapeHtml(category.slug)}">
+          ${escapeHtml(category.name)}
+          <span class="category-filter-count">${category.articles.length}</span>
+        </button>
+      `
+    )
+    .join('');
+
+  filtersNode.innerHTML = allButton + categoryButtons;
+
+  filtersNode.querySelectorAll('.category-filter').forEach((button) => {
+    button.addEventListener('click', () => {
+      activeCategory = button.dataset.category;
+      renderCategoryFilters();
+      applyFilters();
+    });
+  });
+}
+
+function renderCategoryDropdown() {
+  const menuNode = document.getElementById('category-menu');
+  if (!menuNode) return;
+
+  const categories = buildCategories(articles);
+
+  menuNode.innerHTML = categories
+    .map(
+      (category) => `
+        <a href="./index.html?categoria=${encodeURIComponent(category.slug)}" role="menuitem">
+          ${escapeHtml(category.name)}
+          <span class="nav-dropdown-count">${category.articles.length}</span>
+        </a>
+      `
+    )
+    .join('');
+}
+
+function initCategoryDropdown() {
+  const dropdown = document.getElementById('category-dropdown');
+  const toggle = dropdown?.querySelector('.nav-dropdown-toggle');
+  const menu = document.getElementById('category-menu');
+  if (!dropdown || !toggle || !menu) return;
+
+  const closeMenu = () => {
+    toggle.setAttribute('aria-expanded', 'false');
+    menu.classList.remove('open');
+  };
+
+  const openMenu = () => {
+    toggle.setAttribute('aria-expanded', 'true');
+    menu.classList.add('open');
+  };
+
+  toggle.addEventListener('click', () => {
+    const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+    if (isOpen) closeMenu();
+    else openMenu();
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!dropdown.contains(event.target)) closeMenu();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeMenu();
+  });
+
+  menu.addEventListener('click', () => closeMenu());
+}
+
+function applyFilters() {
+  const input = document.getElementById('search-input');
+  const query = normalize(input ? input.value.trim() : '');
+  const cards = document.querySelectorAll('.article-card');
+  let visible = 0;
+
+  cards.forEach((card) => {
+    const inCategory = activeCategory === 'all' || card.dataset.category === activeCategory;
+    const haystack = card.dataset.search || '';
+    const matchesSearch = !query || haystack.includes(query);
+    const match = inCategory && matchesSearch;
+    card.style.display = match ? '' : 'none';
+    if (match) visible += 1;
+  });
+
+  const empty = document.getElementById('search-empty');
+  if (empty) {
+    empty.style.display = visible === 0 ? 'block' : 'none';
+  }
+}
+
 function initSearch() {
   const input = document.getElementById('search-input');
-  const empty = document.getElementById('search-empty');
   if (!input) return;
 
-  input.addEventListener('input', () => {
-    const query = normalize(input.value.trim());
-    const cards = document.querySelectorAll('.article-card');
-    let visible = 0;
-
-    cards.forEach((card) => {
-      const haystack = card.dataset.search || '';
-      const match = !query || haystack.includes(query);
-      card.style.display = match ? '' : 'none';
-      if (match) visible += 1;
-    });
-
-    if (empty) {
-      empty.style.display = visible === 0 ? 'block' : 'none';
-    }
-  });
+  input.addEventListener('input', applyFilters);
 }
 
 function renderArticlePage(article) {
@@ -410,6 +502,24 @@ function normalize(value) {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
+function slugify(value) {
+  return normalize(value)
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function buildCategories(articleList) {
+  const map = new Map();
+  articleList.forEach((article) => {
+    const slug = slugify(article.category);
+    if (!map.has(slug)) {
+      map.set(slug, { slug, name: article.category, articles: [] });
+    }
+    map.get(slug).articles.push(article);
+  });
+  return Array.from(map.values());
+}
+
 async function initialize() {
   initTheme();
 
@@ -423,9 +533,18 @@ async function initialize() {
   try {
     articles = await loadArticleIndex();
 
+    renderCategoryDropdown();
+    initCategoryDropdown();
+
     if (listNode) {
+      const urlCategory = new URLSearchParams(window.location.search).get('categoria');
+      if (urlCategory && buildCategories(articles).some((c) => c.slug === urlCategory)) {
+        activeCategory = urlCategory;
+      }
       renderHomeArticles();
+      renderCategoryFilters();
       initSearch();
+      applyFilters();
     }
 
     if (articleRoot) {
