@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 180" role="img" aria-label="mahima — engenharia de software">
+  <!-- Nome principal -->
+  <text x="0" y="88" font-family="'Segoe UI', Tahoma, sans-serif" font-weight="700" font-size="96" letter-spacing="-2" fill="currentColor">mahima</text>
+
+  <!-- Quadrado equilátero verde claro, logo após o "mahima", com altura igual à cap-height do nome -->
+  <rect x="352" y="16" width="72" height="72" fill="#b2ff08"/>
+
+  <!-- "engenharia de software" proporcional à largura de "mahima" + quadrado -->
+  <text x="0" y="132" font-family="'Segoe UI', Tahoma, sans-serif" font-weight="600" font-size="27.5" letter-spacing="0.5" fill="currentColor" opacity="0.72" textLength="424" lengthAdjust="spacingAndGlyphs">engenharia de software</text>
+</svg>
