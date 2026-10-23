@@ -1,0 +1,182 @@
+{
+  "slug": "solid",
+  "title": "Princípios SOLID",
+  "category": "Design de software",
+  "readTime": "13 minutos",
+  "published": "2026-10-22",
+  "summary": "Um guia prático para entender SRP, OCP, LSP, ISP e DIP sem transformá-los em dogmas vazios de contexto.",
+  "sections": [
+    {
+      "type": "content",
+      "heading": "SOLID como conjunto de boas fronteiras",
+      "body": [
+        "Os princípios SOLID surgiram para orientar projetos mais compreensíveis, flexíveis e resilientes. Cada princípio responde a uma tensão específica: acoplamento, mudança, extensão, substituição e dependência. Eles são úteis como linguagem para discutir arquitetura, mas não são uma receita mágica para todos os sistemas.",
+        "Um erro comum é tratar SOLID como “regra fixa” em vez de ferramenta de design. O objetivo é reduzir custos de mudança sem criar mais abstrações do que o problema exige. Em outras palavras, os princípios devem servir ao domínio, e não o contrário."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "SRP — Princípio da Responsabilidade Única",
+      "body": [
+        "Uma classe deve ter apenas uma razão para mudar. Isso não significa que a entidade deve ter uma única linha de código ou um único método; significa que ela deve concentrar um único motivo de mudança. Quando uma classe mistura regras de negócio, persistência e validação de interface, ela evolui por vários motivos ao mesmo tempo e vira um ponto de ruptura.",
+        "Um exemplo típico é um serviço de cobrança que também envia e-mail e salva logs em disco. A classe muda quando o fluxo financeiro muda, quando a infraestrutura de e-mail muda e quando o formato de log muda. Isso é um sinal de que ela tem mais de uma responsabilidade."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Exemplo SRP: o caso inadequado",
+      "code": "\nclass PedidoController {\n  salvarPedido(dados) {\n    const pedido = new Pedido(dados);\n    banco.insert(pedido);\n    email.enviar('pedido@empresa.com', 'Novo pedido');\n    logger.info('Pedido salvo');\n  }\n}\n        ",
+      "body": [
+        "A classe acima toma decisões de negócio, persistência e comunicação externa. Se o sistema trocar de banco, o e-mail ou o mecanismo de log, a mesma classe precisa mudar. Isso viola o SRP.",
+        "Uma abordagem melhor separa um caso de uso de domínio, um repositório para persistência e um serviço de notificação. Assim, cada componente muda por uma razão principal."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "OCP — Princípio Aberto/Fechado",
+      "body": [
+        "Entidades devem estar abertas para extensão e fechadas para modificação. Em termos práticos, você deve conseguir acrescentar comportamento novo sem alterar o código já existente e bem testado. Isso geralmente é alcançado por interfaces, abstrações e composição.",
+        "Uma política de cálculo de imposto, por exemplo, não deve exigir editar uma classe central toda vez que surgir um novo tipo de imposto. Em vez disso, cada imposto pode ser uma implementação de uma interface comum."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Exemplo OCP: extensão sem alteração do núcleo",
+      "code": "\nclass CalculadoraDeImposto {\n  calcular(produto, estrategia) {\n    return estrategia.aplicar(produto);\n  }\n}\n\nclass ImpostoEstadual {\n  aplicar(produto) {\n    return produto.valor * 0.18;\n  }\n}\n\nclass ImpostoFederal {\n  aplicar(produto) {\n    return produto.valor * 0.12;\n  }\n}\n        ",
+      "body": [
+        "A calculadora não precisa conhecer cada imposto existente. Ela depende de uma estratégia que encapsula a variação. Isso torna a extensão simples e reduz riscos de regressão."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "LSP — Princípio da Substituição de Liskov",
+      "body": [
+        "Objetos de um tipo base devem poder ser substituídos por objetos de um subtipo sem quebrar o comportamento esperado do sistema. Em outras palavras, o subtipo não pode contradizer as promessas do contrato do tipo base.",
+        "Se um método fala “retorna um produto com validade” e uma subclasse retorna null ou lança exceções inesperadas, o design está quebrado. O problema não é a linguagem, e sim a incompatibilidade de contrato."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "ISP — Princípio da Segregação de Interfaces",
+      "body": [
+        "Uma interface deve ser específica para o cliente que a usa. Não force um módulo a implementar métodos que não utiliza. Em vez de uma interface “gigante”, prefira pequenas interfaces com responsabilidade única ou bem delimitada.",
+        "Em sistemas com domínio e integração, uma interface ampla pode obrigar implementações a cumprir contratos que não fazem sentido para esse cliente. Isso gera dependências sem necessidade e aumenta o risco de mudança em cascata."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "DIP — Princípio da Inversão de Dependência",
+      "body": [
+        "Módulos de alto nível não devem depender de detalhes de baixo nível. Ambos devem depender de abstrações. Em código, isso normalmente significa depender de interfaces ou contratos, e não de classes concretas.",
+        "Quando uma classe de negócio conhece diretamente uma implementação de banco de dados, ela fica presa ao mecanismo de persistência. Ao invés disso, o domínio depende de uma interface de repositório; a implementação concreta fica em um módulo de infraestrutura."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Concluindo com equilíbrio",
+      "body": [
+        "Os princípios SOLID são valiosos porque descrevem problemas recorrentes: classes que fazem demais, variações que exigem alteração em cascata, contratos que se contradizem e dependências que queimam o sistema. Mas eles não resolvem tudo. Quando usados por obrigação, podem criar uma camada de abstrações que não acrescenta clareza.",
+        "O melhor uso dos princípios é combinar contexto com clareza. Se a mudança real do domínio sugere uma abstração, use-a. Se não sugere, evite-a. Em design de software, o critério mais importante continua sendo: “essa decisão reduz custo de mudança sem criar complexidade desnecessária?”"
+      ]
+    }
+  ],
+  "references": [
+    "Robert C. Martin — Agile Software Development, Principles, Patterns, and Practices",
+    "Robert C. Martin — The Principles of OOD",
+    "Clean Code e design orientado a objetos de domínio",
+    "Design patterns e princípios de coesão e acoplamento em software"
+  ],
+  "quiz": [
+    {
+      "question": "O que o SRP tenta evitar?",
+      "options": [
+        "Classes com poucos métodos.",
+        "Classes que mudam por múltiplas razões.",
+        "Classes com apenas um atributo.",
+        "Classes sem interfaces."
+      ],
+      "correctIndex": 1,
+      "explanation": "O SRP busca reduzir a chance de uma classe mudar por motivos diferentes, como regra de negócio e persistência ao mesmo tempo."
+    },
+    {
+      "question": "Qual princípio está mais associado a “extensão sem modificação do código existente”?",
+      "options": [
+        "SRP",
+        "OCP",
+        "ISP",
+        "LSP"
+      ],
+      "correctIndex": 1,
+      "explanation": "O OCP enfatiza que o sistema deve aceitar mudança por extensão e não por edição constante de componentes centrais."
+    },
+    {
+      "question": "No LSP, o que ocorre quando um subtipo não respeita o contrato do tipo base?",
+      "options": [
+        "O sistema melhora a legibilidade.",
+        "A abstração deixa de ser confiável.",
+        "A classe torna-se mais encapsulada.",
+        "O código passa a usar menos interfaces."
+      ],
+      "correctIndex": 1,
+      "explanation": "Se um subtipo quebra a promessa do contrato, o sistema deixa de poder substituir o tipo base de forma segura."
+    },
+    {
+      "question": "Qual propósito principal do ISP?",
+      "options": [
+        "Unificar todas as regras de negócio em uma única interface.",
+        "Evitar que clientes dependam de métodos que não usam.",
+        "Criar mais heranças em vez de composição.",
+        "Permitir que todas as classes tenham um único construtor."
+      ],
+      "correctIndex": 1,
+      "explanation": "A segregação de interfaces reduz dependências desnecessárias e mantém contratos mais específicos para cada cliente."
+    },
+    {
+      "question": "O DIP recomenda que módulos de alto nível dependam de quê?",
+      "options": [
+        "Implementações concretas de infraestrutura.",
+        "Abstrações e contratos.",
+        "Classes utilitárias estáticas.",
+        "Detalhes de UI e banco em uma só camada."
+      ],
+      "correctIndex": 1,
+      "explanation": "O DIP faz com que regras de alto nível dependam de abstrações flexíveis, em vez de detalhes específicos de infraestrutura."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Qual é a ideia central do SRP?",
+      "answer": "Uma classe deve ter uma única razão para mudar, evitando múltiplos motivos de alteração em uma mesma entidade."
+    },
+    {
+      "question": "O que significa “aberto para extensão”?",
+      "answer": "Significa que o sistema pode receber novos comportamentos sem reescrever a lógica central já validada."
+    },
+    {
+      "question": "Qual é a pergunta-chave do LSP?",
+      "answer": "Um subtipo pode substituir o tipo base sem quebrar as expectativas do cliente que usa esse contrato?"
+    },
+    {
+      "question": "Por que o ISP é útil?",
+      "answer": "Porque evita interfaces “infinita” e força contratos menores, mais específicos e menos acoplados."
+    },
+    {
+      "question": "O que o DIP tenta inverter?",
+      "answer": "A direção da dependência: o código de alto nível deve depender de abstrações, e não de detalhes de baixo nível."
+    }
+  ],
+  "faq": [
+    {
+      "question": "SOLID é uma camisa de força?",
+      "answer": "Não. Ele é um conjunto de princípios para reduzir riscos de mudança e acoplamento, mas deve ser aplicado com sensibilidade ao contexto."
+    },
+    {
+      "question": "Dá para aplicar SOLID em funções simples?",
+      "answer": "Em funções isoladas, o ganho costuma ser menor. Os princípios são mais relevantes em módulos, serviços e classes com vários comportamentos ou variações."
+    },
+    {
+      "question": "Se eu ignorar um princípio, o software está “ruim”?",
+      "answer": "Nem sempre. O valor do design depende do problema. O erro é usar os princípios como dogma absoluto e ignorar a real necessidade do domínio."
+    }
+  ]
+}
