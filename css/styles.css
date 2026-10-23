@@ -110,10 +110,12 @@ input {
 }
 
 .brand-logo {
-  height: 1.75rem;
+  height: 3rem;
   width: auto;
+  max-width: 100%;
   display: block;
   color: var(--text);
+  transition: color 0.25s ease;
 }
 
 .nav-right {
@@ -659,7 +661,7 @@ input {
   }
 
   .brand-logo {
-    height: 1.5rem;
+    height: 2.5rem;
   }
 
   .nav-right {
