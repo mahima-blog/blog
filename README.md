@@ -2,6 +2,7 @@
 
 Blog técnico da Mahima Engenharia de Software, publicado como site estático no GitHub Pages. O projeto foi implementado em HTML, CSS e JavaScript puros, sem backend e com foco em leitura, acessibilidade e manutenção de conteúdo.
 
+
 ## Visão geral
 
 - Página inicial com apresentação da marca e listagem dos artigos.
