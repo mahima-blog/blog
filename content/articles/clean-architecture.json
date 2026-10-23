@@ -1,0 +1,160 @@
+{
+  "slug": "clean-architecture",
+  "title": "Clean Architecture",
+  "category": "Arquitetura",
+  "readTime": "11 minutos",
+  "published": "2026-10-22",
+  "summary": "Uma visão prática de como separar responsabilidade, energia e dependência em sistemas complexos sem cair em burocracia ou abstrações vazias.",
+  "sections": [
+    {
+      "type": "content",
+      "heading": "Por que a arquitetura importa",
+      "body": [
+        "A arquitetura de software não é um adereço de design; ela define o que custa mais manter, evoluir e testar um sistema. Quando o código cresce sem limites explícitos, a mudança se torna arriscada porque cada novo requisito mexe em regras de negócios, estruturas de acesso a dados e interfaces de usuário ao mesmo tempo.",
+        "A Clean Architecture busca separar as decisões mais mutáveis das decisões mais estáveis. Em outras palavras, regras de negócio não devem depender de tecnologias como banco de dados, frameworks web ou bibliotecas de UI. O objetivo não é eliminar dependências, mas controlar a direção delas."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Objetivos da abordagem",
+      "body": [
+        "A proposta central é criar uma arquitetura em que as regras de negócio sejam independentes de mecanismos externos. Isso torna o sistema mais previsível, testável e fácil de adaptar quando a tecnologia muda. O custo é maior esforço inicial para definir fronteiras claras e, em alguns cenários, estruturas mais rígidas do que o necessário.",
+        "A ideia não é transformar todo projeto em um sistema de “camadas puras”. Há casos em que uma abordagem menos rígida entrega valor mais rápido. O importante é reconhecer quando a complexidade do domínio justifica mais disciplina."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Camadas e regra de dependência",
+      "body": [
+        "A Clean Architecture costuma ser representada em camadas concêntricas. No centro ficam as entidades e casos de uso: regras de negócio e políticas da aplicação. Em volta, os adaptadores e interfaces externas: banco de dados, APIs, frameworks, UI. A regra de dependência diz que as dependências devem apontar para o centro, nunca para fora.",
+        "Isso significa que uma entidade de domínio não deve conhecer que existe um banco SQL nem que existe um controlador HTTP. Essas tecnologias são detalhes de infraestrutura. O código do domínio fala em conceitos do negócio: “cadastrar pedido”, “calcular preço”, “validar limite de crédito”.",
+        "Quando a camada de aplicação depende da camada de infraestrutura, o sistema fica preso às tecnologias e perde flexibilidade. Ao inverter essa direção, você garante que a lógica principal possa ser testada sem mockar um servidor inteiro ou depender de um banco específico."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Limites e responsabilidades",
+      "body": [
+        "Uma arquitetura requer fronteiras bem definidas. O domínio não deve ser responsável por ORMs, filas, integrações com terceiros ou detalhes de apresentação. A camada de infraestrutura, por sua vez, não deve decidir regras de negócio; ela apenas implementa mecanismos que a aplicação usa.",
+        "A responsabilidade de cada camada deve ser clara. Entidades cuidam do modelo do negócio; casos de uso coordenam fluxos específicos; interfaces de adaptação convertem dados externos em convenções internas; e infraestrutura fornece persistência, mensageria, envio de e-mail e outros mecanismos. Quando isso é combinado com interfaces bem desenhadas, o código fica mais fácil de evoluir sem efeito dominó."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Exemplo aplicado: pedido de e-commerce",
+      "code": "\n// domínio\nclass Pedido {\n  constructor(itens, cliente) {\n    this.itens = itens;\n    this.cliente = cliente;\n  }\n\n  total() {\n    return this.itens.reduce((s, item) => s + item.preco, 0);\n  }\n}\n\nclass CalcularValorPedido {\n  executar(pedido) {\n    if (pedido.total() <= 0) {\n      throw new Error('Pedido sem itens válidos');\n    }\n    return pedido.total();\n  }\n}\n\n// infraestrutura\nclass PedidoRepository {\n  salvar(pedido) {\n    // persiste no banco\n  }\n}\n        ",
+      "body": [
+        "No exemplo, a lógica que valida o pedido e calcula o valor é completamente independente da camada de persistência. O banco de dados é um detalhe. O caso de uso conhece a abstração de um repositório, mas não depende de como o objeto é salvo no banco.",
+        "Se em uma nova sprint a empresa passar de PostgreSQL para MongoDB, por exemplo, a regra de negócio não precisa ser reescrita. O que muda é a implementação do adaptador, e a aplicação continua funcionando sem que o domínio “saiba” sobre a mudança."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Benefícios, custos e quando pode ser excessiva",
+      "body": [
+        "Os ganhos são claros: baixo acoplamento, testes mais focados, organização mental mais forte e maior capacidade de adaptação. A arquitetura da aplicação ainda pode mudar sem derrubar regras centrais. Além disso, a higienização de fronteiras facilita que times diferentes trabalhem em paralelos com menos atrito.",
+        "O custo está na complexidade adicional. Em projetos menores, a Clean Architecture pode parecer “muito formal”: interfaces, adaptadores, casos de uso, DTOs e regras de dependência aumentam a quantidade de código e o tempo de escrita. Em sistemas simples, a abordagem pode ser excessiva quando o problema não demanda tanta previsibilidade.",
+        "A regra não é “usar Clean Architecture em tudo”. O critério é a maturidade do domínio, a previsibilidade da mudança e o risco de acoplamento. Quando o problema é simples e bem compreendido, um desenho mais direto pode ser mais honesto e eficiente."
+      ]
+    }
+  ],
+  "references": [
+    "Robert C. Martin — Clean Architecture",
+    "Eric Evans — Domain-Driven Design: Tackling Complexity in the Heart of Software",
+    "Martin Fowler — Architecture Guide",
+    "Vaughn Vernon — Implementing Domain-Driven Design"
+  ],
+  "quiz": [
+    {
+      "question": "Qual é a principal ideia da regra de dependência na Clean Architecture?",
+      "options": [
+        "As camadas externas devem depender das mais internas.",
+        "Dependências devem apontar para o centro do sistema, não para fora.",
+        "Tudo deve ser separado em módulos de um único arquivo.",
+        "As regras de negócio devem depender do banco de dados."
+      ],
+      "correctIndex": 1,
+      "explanation": "A regra de dependência busca manter as regras de negócio no núcleo e impedir que detalhes de infraestrutura definam a lógica central."
+    },
+    {
+      "question": "Qual camada normalmente carrega regras de negócio e políticas do domínio?",
+      "options": [
+        "Infraestrutura",
+        "UI e framework",
+        "Entidades e casos de uso",
+        "Deploy e CI/CD"
+      ],
+      "correctIndex": 2,
+      "explanation": "As entidades e os casos de uso compõem o núcleo da aplicação, onde a lógica vital do negócio deve ficar."
+    },
+    {
+      "question": "Quando a Clean Architecture pode ser excessiva?",
+      "options": [
+        "Quando o sistema tem poucas regras e pouca mudança esperada.",
+        "Quando o time usa apenas linguagem orientada a objetos.",
+        "Quando há muitas integrações com banco de dados.",
+        "Quando o projeto não tem testes automatizados."
+      ],
+      "correctIndex": 0,
+      "explanation": "Em projetos pequenos e estáveis, a adoção de muitos limites pode aumentar custo e complexidade sem ganho proporcional."
+    },
+    {
+      "question": "Qual é um benefício direto de deixar o domínio independente de frameworks?",
+      "options": [
+        "O sistema deixa de usar interfaces públicas.",
+        "O código de negócio fica mais fácil de testar e trocar de tecnologia.",
+        "O front-end passa a depender do banco.",
+        "Não é mais necessário separar responsabilidades."
+      ],
+      "correctIndex": 1,
+      "explanation": "A independência de frameworks reduz acoplamento e facilita testes e evolução tecnológica sem mexer na lógica central."
+    },
+    {
+      "question": "O que o adaptador deve fazer na arquitetura em camadas?",
+      "options": [
+        "Determinar regras de negócio do domínio.",
+        "Conectar tecnologias externas às interfaces internas da aplicação.",
+        "Substituir o caso de uso em todas as decisões.",
+        "Eliminar testes de integração."
+      ],
+      "correctIndex": 1,
+      "explanation": "Adaptadores convertem dados e interações do mundo externo para a linguagem da aplicação, sem misturar lógica de negócio com infraestrutura."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "O que é a regra de dependência?",
+      "answer": "É a convenção de que as dependências devem apontar para o núcleo do sistema, e não o contrário, mantendo regras de negócio independentes de infraestrutura."
+    },
+    {
+      "question": "Qual camada normalmente fica no centro da arquitetura?",
+      "answer": "O domínio: entidades, regras e casos de uso do negócio."
+    },
+    {
+      "question": "Por que frameworks não devem definir a lógica de negócio?",
+      "answer": "Porque frameworks mudam com frequência e são detalhes de implementação; regras de negócio devem sobreviver às mudanças tecnológicas."
+    },
+    {
+      "question": "Qual é um risco da Clean Architecture aplicada sem critério?",
+      "answer": "Aumento de complexidade e burocracia em projetos pequenos, sem trazer benefício real proporcional."
+    },
+    {
+      "question": "O que é um adaptador?",
+      "answer": "É um componente que traduz comunicação entre infraestrutura externa e a aplicação, preservando o domínio isolado."
+    }
+  ],
+  "faq": [
+    {
+      "question": "A Clean Architecture é obrigatório para todos os sistemas?",
+      "answer": "Não. Ela é mais útil quando o domínio é complexo, a mudança é frequente e o risco de acoplamento é alto. Projetos pequenos podem ser mais simples sem perder qualidade."
+    },
+    {
+      "question": "É possível usar Clean Architecture com aplicações web?",
+      "answer": "Sim. A arquitetura não proíbe frameworks web; ela apenas exige que o framework seja usado como infraestrutura e não como fonte de regras de negócio."
+    },
+    {
+      "question": "A arquitetura limpa substitui testes unitários?",
+      "answer": "Não. Ela melhora a separação e a testabilidade, mas não elimina a necessidade de testes de unidade, integração e comportamento em camadas diferentes."
+    }
+  ]
+}

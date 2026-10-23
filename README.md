@@ -21,7 +21,10 @@ Blog técnico da Mahima Engenharia de Software, publicado como site estático no
 ├── js/
 │   └── site.js
 ├── content/
-│   └── articles.js
+│   └── articles/
+│       ├── index.json
+│       ├── clean-architecture.json
+│       └── solid.json
 ├── logo/
 │   └── logo_opcao4_tipografico.png
 └── .nojekyll
@@ -45,9 +48,8 @@ python -m http.server 8000
 
 ## Adicionar novos artigos
 
-1. Abra o arquivo `content/articles.js`.
-2. Adicione um novo objeto ao array `window.articles` seguindo o mesmo formato dos artigos existentes.
-3. Cada artigo deve conter:
+1. Crie `content/articles/<slug>.json`, usando um slug único em minúsculas, separado por hífens e sem espaços.
+2. Siga a estrutura de um artigo existente. Cada artigo deve conter:
    - `slug`
    - `title`
    - `category`
@@ -59,8 +61,11 @@ python -m http.server 8000
    - `quiz`
    - `flashcards`
    - `faq`
-4. A página inicial renderiza automaticamente os artigos em ordem de array.
-5. Para artigo novo, o link de navegação será gerado automaticamente.
+3. Adicione uma entrada em `content/articles/index.json`, no array `articles`, com `slug`, `file` (nome do JSON) e os metadados `title`, `category`, `readTime`, `published` e `summary`.
+4. A posição da entrada no índice define a ordem de exibição e a navegação entre artigos.
+5. Valide o JSON e teste a página inicial e o link `article.html?slug=<slug>` em um servidor estático local antes de publicar.
+
+O índice contém apenas os metadados da listagem; cada artigo completo é carregado sob demanda. Não abra as páginas diretamente como arquivos (`file://`), pois o navegador bloqueia requisições `fetch()` locais. Use um servidor estático, como descrito acima.
 
 ## Publicar no GitHub Pages
 

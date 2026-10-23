@@ -1,0 +1,22 @@
+{
+  "articles": [
+    {
+      "slug": "clean-architecture",
+      "file": "clean-architecture.json",
+      "title": "Clean Architecture",
+      "category": "Arquitetura",
+      "readTime": "11 minutos",
+      "published": "2026-10-22",
+      "summary": "Uma visão prática de como separar responsabilidade, energia e dependência em sistemas complexos sem cair em burocracia ou abstrações vazias."
+    },
+    {
+      "slug": "solid",
+      "file": "solid.json",
+      "title": "Princípios SOLID",
+      "category": "Design de software",
+      "readTime": "13 minutos",
+      "published": "2026-10-22",
+      "summary": "Um guia prático para entender SRP, OCP, LSP, ISP e DIP sem transformá-los em dogmas vazios de contexto."
+    }
+  ]
+}
