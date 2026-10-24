@@ -556,6 +556,39 @@ input {
   color: rgba(4, 26, 39, 0.75);
 }
 
+.article-author {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+
+.article-author-avatar {
+  display: block;
+  width: 4.4rem;
+  height: 4.4rem;
+  flex: 0 0 4.4rem;
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(4, 26, 39, 0.18);
+  object-fit: cover;
+  object-position: center;
+}
+
+.article-author-details {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.article-author-details strong {
+  font-size: 1rem;
+}
+
+.article-author-details span {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
 .article-page {
   padding: 2.4rem 0 4rem;
 }
