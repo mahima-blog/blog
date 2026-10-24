@@ -556,6 +556,39 @@ input {
   color: rgba(4, 26, 39, 0.75);
 }
 
+.article-author {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+
+.article-author-avatar {
+  display: block;
+  width: 4.4rem;
+  height: 4.4rem;
+  flex: 0 0 4.4rem;
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(4, 26, 39, 0.18);
+  object-fit: cover;
+  object-position: center;
+}
+
+.article-author-details {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.article-author-details strong {
+  font-size: 1rem;
+}
+
+.article-author-details span {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
 .article-page {
   padding: 2.4rem 0 4rem;
 }
@@ -791,6 +824,283 @@ input {
   color: var(--muted);
 }
 
+.footer-inner p {
+  margin: 0;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-links a {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.footer-links a:hover {
+  color: var(--text);
+}
+
+.company-hero {
+  padding: clamp(3.5rem, 8vw, 6.5rem) 0;
+  background: var(--hero-grad);
+}
+
+.company-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(240px, 0.8fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 5rem);
+}
+
+.company-hero-copy h1 {
+  max-width: 780px;
+  margin: 0 0 1.2rem;
+  font-size: clamp(2.7rem, 7vw, 5rem);
+  line-height: 1.04;
+  letter-spacing: -0.055em;
+}
+
+.company-hero-copy .lead {
+  margin: 0;
+  max-width: 670px;
+}
+
+.company-hero-actions {
+  justify-content: flex-start;
+}
+
+.company-hero-note {
+  position: relative;
+  padding: 2rem;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.company-note-mark {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 2.5rem;
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.company-hero-note .eyebrow {
+  margin-bottom: 0.55rem;
+}
+
+.company-hero-note p:last-child {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+.company-section {
+  padding-top: clamp(3.5rem, 7vw, 6rem);
+  padding-bottom: clamp(3.5rem, 7vw, 6rem);
+}
+
+.company-intro,
+.company-audience {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 7vw, 7rem);
+  align-items: start;
+}
+
+.company-intro h2,
+.company-audience h2,
+.company-section .section-header h2,
+.company-products h2,
+.company-closing h2 {
+  max-width: 720px;
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.12;
+  letter-spacing: -0.045em;
+}
+
+.company-intro .eyebrow,
+.company-audience .eyebrow {
+  margin-bottom: 0.8rem;
+}
+
+.company-intro-copy p,
+.company-audience p,
+.company-products p {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.company-intro-copy p:last-child,
+.company-audience p:last-child,
+.company-products p:last-child {
+  margin-bottom: 0;
+}
+
+.company-section-alt {
+  background: var(--surface-alt);
+}
+
+.company-section .section-header {
+  max-width: 700px;
+}
+
+.company-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.company-card {
+  min-height: 100%;
+  padding: clamp(1.3rem, 2.5vw, 2rem);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+}
+
+.company-card-number {
+  display: inline-block;
+  margin-bottom: 2rem;
+  color: var(--primary-alt);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.company-card h3,
+.company-steps h3,
+.company-principles h3 {
+  margin: 0 0 0.55rem;
+  font-size: 1.2rem;
+  line-height: 1.3;
+}
+
+.company-card p,
+.company-steps p,
+.company-principles p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.company-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem 3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: steps;
+}
+
+.company-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.company-step-number {
+  display: grid;
+  place-items: center;
+  flex: 0 0 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 800;
+}
+
+.company-principles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.company-principles article {
+  padding-top: 1rem;
+  border-top: 2px solid var(--accent);
+}
+
+.company-products {
+  padding: clamp(2.5rem, 5vw, 4rem) 0;
+  background: var(--primary);
+  color: var(--bg);
+}
+
+[data-theme="dark"] .company-products {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.company-products-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: clamp(2rem, 7vw, 7rem);
+}
+
+.company-products .eyebrow,
+[data-theme="dark"] .company-products .eyebrow {
+  color: var(--accent);
+}
+
+.company-products p {
+  color: inherit;
+  opacity: 0.78;
+}
+
+.company-closing {
+  padding: clamp(4rem, 9vw, 7rem) 0;
+  background: var(--hero-grad);
+  text-align: center;
+}
+
+.company-closing-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.company-closing h2 {
+  max-width: 760px;
+}
+
+.company-closing-inner > p:not(.eyebrow) {
+  max-width: 650px;
+  margin: 1rem auto 0;
+  color: var(--muted);
+}
+
+.company-closing .button {
+  margin-top: 1.5rem;
+}
+
+.company-closing .company-contact {
+  margin-top: 1.5rem;
+}
+
+.company-contact a {
+  color: var(--primary-alt);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
 @media (max-width: 700px) {
   .nav {
     flex-direction: column;
@@ -823,6 +1133,38 @@ input {
 
   .hero {
     padding-top: 3.5rem;
+  }
+
+  .company-hero-grid,
+  .company-intro,
+  .company-audience,
+  .company-products-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .company-hero-grid {
+    gap: 2rem;
+  }
+
+  .company-hero-note {
+    max-width: 480px;
+  }
+
+  .company-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .company-card-number {
+    margin-bottom: 1rem;
+  }
+
+  .company-steps,
+  .company-principles {
+    grid-template-columns: 1fr;
+  }
+
+  .company-principles {
+    gap: 1.25rem;
   }
 
   .hero-actions {

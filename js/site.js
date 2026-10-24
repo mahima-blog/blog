@@ -293,6 +293,13 @@ function renderArticlePage(article) {
         <span>Publicado em ${escapeHtml(formatDate(article.published))}</span>
         <span>Tempo de leitura: ${escapeHtml(article.readTime)}</span>
       </div>
+      <div class="article-author">
+        <img class="article-author-avatar" src="./assets/images/actor.jpg" alt="Foto de Stanley Dias" />
+        <div class="article-author-details">
+          <strong>Stanley Dias</strong>
+          <span>Compartilhando aprendizados sobre engenharia de software e boas práticas.</span>
+        </div>
+      </div>
     </div>
   `;
 

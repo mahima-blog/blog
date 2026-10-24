@@ -6,6 +6,7 @@ Blog técnico da Mahima Engenharia de Software, publicado como site estático no
 ## Visão geral
 
 - Página inicial com apresentação da marca e listagem dos artigos.
+- Página institucional em `empresa.html`, com apresentação dos serviços e forma de trabalho da Mahima.
 - Artigos completos em português brasileiro com resumo, conteúdo estruturado, quiz, flashcards e FAQ.
 - Estrutura simples para adicionar novos temas sem repetir layout visual.
 - Deploy compatível com GitHub Pages em repositório de usuário ou em site de projeto.
@@ -17,6 +18,7 @@ Blog técnico da Mahima Engenharia de Software, publicado como site estático no
 ├── README.md
 ├── index.html
 ├── article.html
+├── empresa.html
 ├── css/
 │   └── styles.css
 ├── js/
@@ -26,8 +28,11 @@ Blog técnico da Mahima Engenharia de Software, publicado como site estático no
 │       ├── index.json
 │       ├── clean-architecture.json
 │       └── solid.json
-├── logo/
-│   └── logo_opcao4_tipografico.png
+├── assets/
+│   ├── images/
+│   └── logo/
+│       ├── logo_opcao4_tipografico.png
+│       └── mahima-logo.svg
 └── .nojekyll
 ```
 
@@ -44,6 +49,7 @@ python -m http.server 8000
 3. Acesse:
 
 - http://localhost:8000/
+- http://localhost:8000/empresa.html
 - http://localhost:8000/article.html?slug=clean-architecture
 - http://localhost:8000/article.html?slug=solid
 
