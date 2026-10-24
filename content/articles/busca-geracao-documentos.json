@@ -1,0 +1,160 @@
+{
+  "slug": "busca-geracao-documentos",
+  "title": "Quando uma busca com geração de respostas precisa consultar documentos internos",
+  "category": "IA aplicada a dados e conhecimento",
+  "readTime": "14 minutos",
+  "published": "2026-10-24",
+  "summary": "Como avaliar se a geração apoiada por recuperação de documentos faz sentido, preparar fontes e permissões e verificar respostas sem presumir que a abordagem elimina erros.",
+  "sections": [
+    {
+      "type": "content",
+      "heading": "O que significa combinar busca e geração",
+      "body": [
+        "Um modelo de linguagem não conhece automaticamente os documentos internos atualizados de uma organização. Uma arquitetura comum para responder perguntas sobre esse conteúdo combina uma etapa de busca, que seleciona trechos de fontes disponíveis, com uma etapa de geração, que recebe esses trechos como contexto para formular uma resposta. Essa composição é frequentemente chamada de geração aumentada por recuperação, ou RAG.",
+        "A ideia pode ser útil quando pessoas precisam localizar informação distribuída em documentos e uma resposta em linguagem natural facilita a consulta. Mas não é uma garantia de que a informação foi encontrada, interpretada corretamente ou apresentada sem distorção. A qualidade depende das fontes, da busca, do contexto enviado e de como a resposta é usada.",
+        "Antes de escolher essa arquitetura, compare-a com busca tradicional, filtros, uma FAQ mantida ou uma consulta estruturada. Se o objetivo é localizar um documento específico, uma busca simples pode ser mais clara, previsível e fácil de manter."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Verifique se a necessidade pede geração",
+      "body": [
+        "Observe as perguntas reais que as pessoas fazem e o que uma resposta útil precisa conter. Se elas precisam de um link para uma política, uma lista de documentos por data ou um valor em uma tabela, filtros e consultas convencionais podem atender diretamente. Se precisam reunir passagens de várias fontes e sintetizá-las, geração pode merecer avaliação.",
+        "Examine também o estado do acervo: há documentos confiáveis, atuais, legíveis e com responsáveis? Duplicatas, versões conflitantes, conteúdo escaneado com falhas ou regras implícitas tornam a recuperação menos previsível. Um sistema de IA não corrige automaticamente problemas de governança documental.",
+        "Defina de antemão o que fazer quando não houver evidência suficiente. Uma resposta segura pode indicar que não encontrou informação adequada e encaminhar a pessoa para uma fonte ou responsável. Forçar uma resposta para toda pergunta aumenta a chance de apresentar uma conclusão sem base."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Exemplo hipotético: consulta a procedimentos internos",
+      "code": "\nCenário fictício: pessoas consultam procedimentos distribuídos em arquivos.\n\nPergunta: \"Qual formulário uso para solicitar acesso temporário?\"\n\nFluxo conceitual:\n1. identificar documentos autorizados para a pessoa;\n2. buscar trechos relacionados à solicitação e ao acesso temporário;\n3. verificar se os trechos são atuais e suficientes;\n4. formular uma resposta curta com indicação das fontes;\n5. encaminhar a pergunta se houver conflito ou evidência insuficiente.\n\nA resposta precisa ser conferida contra as fontes; o exemplo não representa\num sistema real nem garante que a busca encontre o procedimento correto.\n        ",
+      "body": [
+        "O exemplo mostra uma decisão importante: autorização de acesso precisa acontecer antes da recuperação ou da geração. Filtrar documentos depois de buscar ou gerar pode expor trechos que a pessoa não deveria receber.",
+        "Também é preciso distinguir encontrar um trecho relacionado de provar que ele está vigente. A data, a versão, o proprietário do documento e possíveis conflitos entre fontes fazem parte da interpretação."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Prepare documentos, versões e permissões",
+      "body": [
+        "Inventarie as fontes e estabeleça quais são oficiais, quem responde por elas, como são atualizadas e como versões antigas deixam de ser usadas. Remova duplicatas quando possível e preserve metadados úteis, como título, data, área e identificador do documento.",
+        "A preparação para busca pode dividir documentos em trechos menores e indexá-los por termos ou representações numéricas chamadas embeddings. O tamanho dos trechos e a sobreposição influenciam o que pode ser recuperado: partes pequenas podem perder contexto; partes grandes podem trazer ruído ou exceder o espaço disponível para a resposta. Não existe uma configuração que sirva para todo acervo.",
+        "Trate permissões como parte do desenho da busca. O sistema deve respeitar os controles existentes, inclusive quando os documentos mudam de acesso ou são removidos. Teste separadamente se pessoas com permissões diferentes recebem conjuntos de fontes apropriados; uma boa resposta não compensa uma violação de acesso."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Avalie busca e resposta como etapas distintas",
+      "body": [
+        "Uma resposta final ruim pode ocorrer porque a busca não encontrou a passagem certa ou porque o modelo usou mal o contexto encontrado. Analise essas etapas separadamente: para consultas representativas, confira se os trechos relevantes aparecem entre os resultados e se a resposta preserva o que as fontes dizem.",
+        "Monte exemplos de perguntas comuns, ambíguas, desatualizadas e sem resposta nos documentos. Registre fontes esperadas ou critérios de relevância e inclua testes de permissões. Revise afirmações importantes contra o texto original; um link ou uma citação na saída não prova que a afirmação está apoiada por ela.",
+        "Observe também respostas que omitem qualificadores, misturam versões ou tratam instruções encontradas no conteúdo como comandos para o sistema. Documentos recuperados são dados a interpretar, não uma razão para ignorar as regras e permissões definidas para a aplicação."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Desenhe limites para respostas incertas",
+      "body": [
+        "Instrua a solução a usar o contexto disponível, distinguir o que a fonte afirma do que não informa e recusar ou encaminhar quando a evidência for fraca ou conflitante. Essas instruções ajudam a definir o comportamento esperado, mas não garantem que toda resposta siga o limite.",
+        "Quando apropriado, mostre as fontes recuperadas para que a pessoa possa verificar a resposta. Prefira referências específicas e acessíveis a uma indicação genérica de que “a informação veio dos documentos”. Se o sistema não consegue apontar evidência útil, isso pode ser um motivo para não apresentar a resposta como confirmada.",
+        "Mantenha uma rota de busca manual ou de contato com a área responsável para casos não atendidos. Esse caminho alternativo tem custo operacional e precisa ser planejado, mas evita que a geração seja tratada como fonte oficial quando não há suporte suficiente."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Considere os custos e a manutenção contínua",
+      "body": [
+        "Além das chamadas ao modelo, a operação inclui ingestão e atualização de arquivos, indexação, armazenamento, controles de acesso, observabilidade e revisão de qualidade. A latência também depende da busca, do volume de contexto e do serviço utilizado. Avalie esses componentes em um teste controlado e com padrões de uso plausíveis.",
+        "Mudanças no acervo podem alterar os resultados sem que o código mude. Monitore falhas, perguntas sem resposta, encaminhamentos, correções e fontes mais consultadas, respeitando minimização e retenção dos dados. Use os sinais para investigar, não como prova automática de que o sistema está correto ou de que a causa de um problema foi identificada.",
+        "Busca com geração é uma escolha de arquitetura, não um atalho para evitar organização da informação. Ela pode ser adequada quando há conteúdo consultável e uma necessidade real de síntese, desde que permissões, atualização, avaliação, limites e manutenção façam parte do desenho."
+      ]
+    }
+  ],
+  "references": [
+    "Lewis et al. — Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks, 2020",
+    "NIST — Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence Profile (AI 600-1), 2024",
+    "Liu et al. — Lost in the Middle: How Language Models Use Long Contexts, 2023"
+  ],
+  "quiz": [
+    {
+      "question": "Qual necessidade pode justificar busca combinada com geração?",
+      "options": [
+        "Qualquer pesquisa por palavra-chave, sem avaliar alternativas.",
+        "Reunir e sintetizar passagens de fontes para responder perguntas em linguagem natural.",
+        "Garantir que documentos internos estejam atualizados.",
+        "Substituir controles de acesso existentes."
+      ],
+      "correctIndex": 1,
+      "explanation": "A geração pode ajudar a sintetizar fontes, mas a adequação depende do uso e deve ser comparada com busca ou consultas mais simples."
+    },
+    {
+      "question": "Quando permissões devem ser verificadas?",
+      "options": [
+        "Somente depois que a resposta for gerada.",
+        "Antes de recuperar e disponibilizar conteúdo ao sistema.",
+        "Apenas se a resposta incluir um link.",
+        "Permissões não se aplicam a documentos indexados."
+      ],
+      "correctIndex": 1,
+      "explanation": "A autorização precisa restringir as fontes desde a recuperação para não expor conteúdo indevido ao modelo ou à pessoa usuária."
+    },
+    {
+      "question": "Como diagnosticar uma resposta incorreta?",
+      "options": [
+        "Aumentar o tamanho de todos os trechos sem investigar.",
+        "Separar a análise da recuperação de fontes da análise de como a resposta usou o contexto.",
+        "Concluir que o modelo é sempre a única causa.",
+        "Remover as fontes para evitar contradições."
+      ],
+      "correctIndex": 1,
+      "explanation": "A falha pode ocorrer na busca ou na geração, e avaliar as etapas separadamente ajuda a localizar o tipo de problema."
+    },
+    {
+      "question": "Uma citação na resposta garante que a afirmação está correta?",
+      "options": [
+        "Sim, toda citação é automaticamente verificada.",
+        "Não; é preciso conferir se a fonte realmente apoia a afirmação.",
+        "Sim, desde que o documento esteja indexado.",
+        "Não, porque referências nunca ajudam a revisão."
+      ],
+      "correctIndex": 1,
+      "explanation": "Indicar uma fonte não prova que o conteúdo citado sustenta a afirmação; a relação precisa ser revisada."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "O que é geração aumentada por recuperação (RAG)?",
+      "answer": "Uma abordagem que recupera trechos de fontes e os fornece como contexto a um modelo para compor uma resposta."
+    },
+    {
+      "question": "Quando busca tradicional pode ser suficiente?",
+      "answer": "Quando a tarefa é localizar um documento, filtrar registros ou obter um valor estruturado sem precisar sintetizar várias fontes."
+    },
+    {
+      "question": "Por que avaliar recuperação e geração separadamente?",
+      "answer": "Porque uma resposta ruim pode resultar de não encontrar a fonte relevante ou de usar incorretamente o contexto encontrado."
+    },
+    {
+      "question": "Quando aplicar permissões a documentos?",
+      "answer": "Na etapa de recuperação, antes que conteúdo restrito seja disponibilizado ao modelo ou à pessoa usuária."
+    },
+    {
+      "question": "Uma citação garante que uma resposta está fundamentada?",
+      "answer": "Não. É necessário verificar se o trecho citado realmente sustenta a afirmação e se a fonte está vigente."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Busca com geração evita respostas inventadas?",
+      "answer": "Não. Contexto recuperado pode reduzir algumas lacunas, mas a busca pode falhar e o modelo pode interpretar ou combinar trechos incorretamente. Avaliação, limites e revisão continuam necessários."
+    },
+    {
+      "question": "Preciso transformar todos os documentos em embeddings?",
+      "answer": "Não necessariamente. A estratégia depende do tipo de pergunta, do formato dos dados e dos requisitos de acesso. Busca textual, filtros e consultas estruturadas podem ser mais adequados em alguns casos."
+    },
+    {
+      "question": "Como manter respostas alinhadas a documentos atualizados?",
+      "answer": "Defina um processo de ingestão e remoção, preserve metadados de versão e vigência e teste o que ocorre quando uma fonte muda ou perde autorização. A indexação não se atualiza necessariamente sozinha."
+    }
+  ]
+}
