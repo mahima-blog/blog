@@ -1,6 +1,33 @@
 {
   "articles": [
     {
+      "slug": "caso-de-uso-ia",
+      "file": "caso-de-uso-ia.json",
+      "title": "Antes do piloto: como decidir se um processo é um bom caso de uso para IA",
+      "category": "IA aplicada e diagnóstico",
+      "readTime": "12 minutos",
+      "published": "2026-10-24",
+      "summary": "Um roteiro para entender o problema, comparar IA com alternativas mais simples e definir critérios de viabilidade, risco e avaliação antes de iniciar um piloto."
+    },
+    {
+      "slug": "avaliacao-respostas-ia",
+      "file": "avaliacao-respostas-ia.json",
+      "title": "Como avaliar respostas de um sistema com IA antes de colocá-lo em uso",
+      "category": "Qualidade e avaliação de IA",
+      "readTime": "14 minutos",
+      "published": "2026-10-24",
+      "summary": "Um método para criar exemplos representativos, definir critérios por tarefa e revisar erros de sistemas com IA sem confundir uma avaliação limitada com garantia de qualidade."
+    },
+    {
+      "slug": "busca-geracao-documentos",
+      "file": "busca-geracao-documentos.json",
+      "title": "Quando uma busca com geração de respostas precisa consultar documentos internos",
+      "category": "IA aplicada a dados e conhecimento",
+      "readTime": "14 minutos",
+      "published": "2026-10-24",
+      "summary": "Como avaliar se a geração apoiada por recuperação de documentos faz sentido, preparar fontes e permissões e verificar respostas sem presumir que a abordagem elimina erros."
+    },
+    {
       "slug": "clean-architecture",
       "file": "clean-architecture.json",
       "title": "Clean Architecture",

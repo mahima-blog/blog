@@ -1,0 +1,160 @@
+{
+  "slug": "caso-de-uso-ia",
+  "title": "Antes do piloto: como decidir se um processo é um bom caso de uso para IA",
+  "category": "IA aplicada e diagnóstico",
+  "readTime": "12 minutos",
+  "published": "2026-10-24",
+  "summary": "Um roteiro para entender o problema, comparar IA com alternativas mais simples e definir critérios de viabilidade, risco e avaliação antes de iniciar um piloto.",
+  "sections": [
+    {
+      "type": "content",
+      "heading": "Comece pelo problema, não pela ferramenta",
+      "body": [
+        "A ideia de aplicar inteligência artificial pode surgir antes de existir uma definição clara do problema. Nesse ponto, é tentador escolher um modelo, montar uma demonstração e procurar onde encaixá-la. Um caminho mais útil é começar pelo trabalho que precisa melhorar: quem o executa, o que dispara a tarefa, quais informações são usadas e o que acontece quando algo foge do fluxo esperado.",
+        "Uma descrição concreta ajuda a separar sintomas de causas. “Precisamos de IA para atender melhor” não define uma tarefa. “A equipe recebe solicitações por três canais, identifica manualmente o assunto e encaminha cada uma ao grupo responsável” já permite investigar volume, exceções, erros de encaminhamento e tempo gasto.",
+        "O objetivo da descoberta não é confirmar que a ideia inicial estava certa. É decidir se há um problema relevante, se uma mudança pode ser avaliada e qual tipo de solução merece ser testado."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Mapeie o processo atual e suas exceções",
+      "body": [
+        "Desenhe o fluxo como ele acontece hoje, incluindo entradas, decisões, sistemas consultados, responsáveis e saídas. Converse com as pessoas que realizam o trabalho e observe uma amostra de casos reais, respeitando as regras de acesso e privacidade. Procedimentos formais podem não refletir atalhos, exceções ou retrabalho da rotina.",
+        "Registre o que torna cada caso simples ou difícil. Uma tarefa pode parecer repetitiva, mas depender de contexto não registrado, dados inconsistentes ou decisões que exigem responsabilidade humana. Essas condições mudam a viabilidade e precisam aparecer antes de estimar automação.",
+        "Também identifique quem recebe o resultado e como um erro seria percebido. Uma classificação incorreta que pode ser corrigida antes de qualquer ação tem consequência diferente de uma decisão que altera cadastro, envia uma comunicação ou afeta um compromisso com outra pessoa."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Exemplo hipotético: triagem de solicitações internas",
+      "code": "\nCenário fictício para ilustrar o método — não é um caso de cliente.\n\nProblema observado: solicitações chegam por e-mail e são encaminhadas manualmente.\nPergunta: a equipe perde tempo identificando o destino ou faltam informações na entrada?\nAlternativas a comparar:\n- formulário com campos mais claros e regras de encaminhamento;\n- classificação automática por regras existentes;\n- sugestão de categoria por IA, confirmada por uma pessoa.\n\nPrimeiro teste possível: sugerir uma categoria sem enviar nem alterar a solicitação.\nCritério a definir antes: quais categorias são avaliadas e que tipos de erro\nexigem correção ou encaminhamento manual.\n        ",
+      "body": [
+        "O cenário ilustra por que convém verificar a causa antes de escolher a tecnologia. Se a maior dificuldade for a ausência de informações, melhorar o formulário pode ajudar mais do que classificar texto incompleto. Se as regras forem estáveis, uma automação convencional pode ser mais simples de explicar e manter.",
+        "A sugestão de categoria por IA só deve avançar se houver uma forma de comparar suas respostas com decisões revisadas, limitar o impacto de erros e observar o trabalho adicional que a revisão cria."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Compare opções, inclusive a de não automatizar",
+      "body": [
+        "Considere pelo menos três caminhos: manter e melhorar o processo, automatizar com regras determinísticas ou usar IA em uma etapa específica. As opções podem ser combinadas, mas cada componente acrescenta implementação, manutenção e pontos de falha. A IA não precisa ser a primeira alternativa nem a resposta para todas as etapas.",
+        "Para cada opção, pergunte se os dados necessários existem e podem ser usados; se o processo tem volume e variação suficientes para justificar a mudança; quem será responsável por revisar exceções; e como a solução se integra aos sistemas atuais. Considere também o que será feito quando o serviço estiver indisponível ou o resultado não puder ser usado.",
+        "Compare o custo total de operar a solução, não apenas o esforço de construir um protótipo. Inclua revisão humana, correção de dados, monitoramento, mudanças no processo e dependência de serviços externos. Se esses custos não puderem ser estimados com precisão, registre as incertezas em vez de tratá-las como zero."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Defina critérios observáveis antes do piloto",
+      "body": [
+        "Escolha uma linha de base para entender o processo atual e defina o que o piloto deve demonstrar. Um critério pode combinar qualidade por tipo de caso, frequência de encaminhamento para revisão, tempo de conclusão e esforço de correção. O indicador precisa corresponder à tarefa; uma média geral pode esconder erros graves em uma categoria menos frequente.",
+        "Especifique também o limite de aceitação e quem decide se ele foi atingido. Esses valores dependem das consequências, do custo de erro e da capacidade da equipe; não existe um patamar universal que torne uma solução adequada para qualquer processo.",
+        "Registre hipóteses e condições do teste: quais casos entram, quais ficam de fora, como as respostas serão revisadas, quais dados podem ser usados e como interromper a experiência. Sem esse contexto, os resultados de uma demonstração podem ser confundidos com evidência de funcionamento operacional."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Avalie riscos, limites e condições para interromper",
+      "body": [
+        "Identifique os dados envolvidos, quem pode acessá-los, para onde serão enviados e por quanto tempo serão mantidos. Verifique os termos e configurações do serviço escolhido e as obrigações aplicáveis ao contexto com as pessoas responsáveis. Uma avaliação técnica não substitui análise jurídica nem garante conformidade.",
+        "Defina quais decisões permanecem com uma pessoa, como casos incertos serão encaminhados e quais ações a solução não pode executar. Para testes iniciais, limitar o sistema a produzir sugestões sem alterar registros ou enviar mensagens pode reduzir a consequência de uma falha, embora não elimine todos os riscos.",
+        "Combine sinais que exigem pausa ou revisão do piloto: dados expostos, tipos de erro acima do limite acordado, aumento de retrabalho ou impossibilidade de operar sem supervisão suficiente. Ter uma condição de interrupção explícita torna a avaliação mais responsável do que ampliar o uso por inércia."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Decida o próximo passo com evidências e incertezas visíveis",
+      "body": [
+        "Ao final, documente o que foi aprendido, quais grupos de casos foram avaliados, quais falhas apareceram e o que ainda não se sabe. O resultado pode ser avançar para um teste mais amplo, redesenhar o processo, comparar outra solução ou encerrar a hipótese.",
+        "Um piloto limitado não prova desempenho em todos os contextos, nem garante ganhos futuros. O valor do exercício está em reduzir incertezas relevantes com exposição controlada e critérios combinados, para que a próxima decisão seja mais informada.",
+        "Uma boa oportunidade de IA é aquela em que existe uma necessidade entendida, dados e integração viáveis, riscos tratáveis e uma forma de avaliar o resultado. Se uma dessas condições estiver ausente, o próximo passo pode ser preparar o processo ou a informação — não construir um modelo."
+      ]
+    }
+  ],
+  "references": [
+    "NIST — Artificial Intelligence Risk Management Framework (AI RMF 1.0), 2023",
+    "NIST — Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence Profile (AI 600-1), 2024",
+    "Google — Rules of Machine Learning: Best Practices for ML Engineering"
+  ],
+  "quiz": [
+    {
+      "question": "Qual deve ser o ponto de partida ao avaliar uma oportunidade de IA?",
+      "options": [
+        "Escolher o modelo mais recente disponível.",
+        "Definir o problema, o processo atual e quem é afetado.",
+        "Montar uma demonstração antes de conversar com a equipe.",
+        "Automatizar todas as etapas repetitivas de uma vez."
+      ],
+      "correctIndex": 1,
+      "explanation": "Entender a tarefa e suas condições permite comparar alternativas e definir o que a solução precisa melhorar."
+    },
+    {
+      "question": "Por que comparar IA com regras ou mudanças no processo?",
+      "options": [
+        "Porque IA nunca é adequada a processos empresariais.",
+        "Para identificar uma opção mais simples que possa atender à necessidade.",
+        "Para garantir que todas as opções custem o mesmo.",
+        "Para evitar definir critérios de avaliação."
+      ],
+      "correctIndex": 1,
+      "explanation": "Regras convencionais ou ajustes no processo podem resolver a causa com menos complexidade, dependendo do contexto."
+    },
+    {
+      "question": "O que torna um critério de sucesso útil para um piloto?",
+      "options": [
+        "Ser observável, ligado à tarefa e definido antes de avaliar os resultados.",
+        "Ser escolhido depois de ver qual métrica ficou melhor.",
+        "Medir apenas a velocidade do modelo.",
+        "Ser igual para qualquer processo e nível de risco."
+      ],
+      "correctIndex": 0,
+      "explanation": "Critérios prévios e relacionados ao problema reduzem interpretações enviesadas e ajudam a decidir o próximo passo."
+    },
+    {
+      "question": "O que um piloto bem-sucedido demonstra?",
+      "options": [
+        "Que o sistema funcionará em todo contexto futuro.",
+        "Que não será necessária supervisão.",
+        "Evidências limitadas às condições e aos casos avaliados.",
+        "Que os riscos foram eliminados."
+      ],
+      "correctIndex": 2,
+      "explanation": "Um piloto reduz algumas incertezas, mas seus resultados não garantem comportamento em outros casos ou condições."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "Qual é a primeira pergunta antes de escolher uma solução de IA?",
+      "answer": "Que problema concreto do processo precisa melhorar, para quem e em quais condições?"
+    },
+    {
+      "question": "Por que mapear exceções do processo?",
+      "answer": "Porque dados ausentes, casos atípicos e decisões que exigem responsabilidade humana afetam viabilidade, risco e desenho da solução."
+    },
+    {
+      "question": "Quais alternativas devem ser comparadas com IA?",
+      "answer": "Melhorar o processo atual, usar automação determinística e aplicar IA em uma etapa específica; também é válido não automatizar."
+    },
+    {
+      "question": "Quando definir critérios de sucesso?",
+      "answer": "Antes do piloto, especificando indicadores observáveis, limites, casos avaliados e quem decide se foram atendidos."
+    },
+    {
+      "question": "O que um piloto não pode garantir?",
+      "answer": "Que o sistema funcionará em todos os contextos futuros, eliminará riscos ou produzirá ganhos fora das condições avaliadas."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Todo processo repetitivo é um bom caso de uso para IA?",
+      "answer": "Não. A tarefa pode ser resolvida com regras, por uma mudança no processo ou sem automação. É preciso avaliar variação, dados, consequências de erro, integração e custo de operação."
+    },
+    {
+      "question": "Um piloto precisa usar dados reais?",
+      "answer": "Depende do que se quer avaliar e das regras aplicáveis. Dados sintéticos ou desidentificados podem ajudar em etapas iniciais, mas podem não representar as condições reais. O uso de dados reais exige avaliar necessidade, acesso, proteção e configurações do serviço."
+    },
+    {
+      "question": "Se o piloto atingiu os critérios, posso liberar para todos?",
+      "answer": "Não automaticamente. Verifique se os casos avaliados representam a operação, se existem controles e supervisão adequados e se o sistema pode ser monitorado. Resultados limitados não garantem comportamento em cenários diferentes."
+    }
+  ]
+}

@@ -1,0 +1,160 @@
+{
+  "slug": "avaliacao-respostas-ia",
+  "title": "Como avaliar respostas de um sistema com IA antes de colocá-lo em uso",
+  "category": "Qualidade e avaliação de IA",
+  "readTime": "14 minutos",
+  "published": "2026-10-24",
+  "summary": "Um método para criar exemplos representativos, definir critérios por tarefa e revisar erros de sistemas com IA sem confundir uma avaliação limitada com garantia de qualidade.",
+  "sections": [
+    {
+      "type": "content",
+      "heading": "Uma resposta convincente não é evidência suficiente",
+      "body": [
+        "Sistemas generativos podem produzir respostas diferentes para entradas semelhantes e apresentar texto fluente mesmo quando há omissões ou erros. Avaliar algumas interações escolhidas por parecerem boas não revela, por si só, se a solução atende ao uso pretendido.",
+        "Uma avaliação útil começa pela tarefa: resumir documentos, classificar solicitações, extrair campos ou redigir uma resposta são problemas distintos. Cada um exige critérios e exemplos próprios. “Qualidade” precisa ser traduzida em aspectos que uma pessoa consiga observar e discutir.",
+        "A avaliação não oferece uma garantia universal. Ela ajuda a encontrar limitações conhecidas sob condições definidas, comparar versões e decidir se há evidência suficiente para o próximo estágio de teste."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Defina a tarefa e as consequências dos erros",
+      "body": [
+        "Descreva qual entrada o sistema recebe, que tipo de saída deve produzir, quem a usará e o que acontece depois. Delimite também o que está fora do escopo: por exemplo, uma ferramenta de rascunho pode sugerir texto, mas não deve enviar a mensagem por conta própria.",
+        "Liste erros possíveis e sua gravidade. Em uma classificação, confundir duas categorias pode ter consequências diferentes de deixar o caso sem classificação. Em uma extração, omitir um dado crítico pode ser mais sério do que devolver um campo opcional vazio. A avaliação deve dar atenção a esses casos, não apenas contar acertos gerais.",
+        "Combine como tratar incerteza, informação insuficiente e pedidos fora de escopo. Uma resposta adequada pode ser solicitar contexto ou encaminhar para revisão, em vez de produzir uma conclusão sem base."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Monte um conjunto de exemplos que represente o uso",
+      "body": [
+        "Reúna entradas que cubram casos comuns, variações relevantes, exceções e dados incompletos. Use exemplos autorizados para esse propósito e remova ou proteja informações identificáveis quando possível. Um conjunto pequeno selecionado apenas por ser fácil pode tornar a avaliação excessivamente otimista.",
+        "Para cada entrada, registre o resultado esperado ou os critérios que uma pessoa revisora deve usar. Algumas tarefas têm uma resposta de referência relativamente objetiva; outras permitem várias respostas aceitáveis e exigem uma rubrica com dimensões como completude, fidelidade à entrada, clareza e respeito aos limites definidos.",
+        "Mantenha uma separação entre exemplos usados para ajustar instruções ou configurações e aqueles reservados para uma verificação posterior. Reutilizar continuamente os mesmos exemplos pode esconder regressões em casos não vistos durante o ajuste."
+      ]
+    },
+    {
+      "type": "example",
+      "heading": "Exemplo hipotético: avaliar extração de dados de solicitações",
+      "code": "\nCenário fictício: extrair campos de solicitações para revisão de uma equipe.\n\nExemplos do conjunto:\n- mensagem completa com todos os campos;\n- campo opcional ausente;\n- duas datas ou valores conflitantes;\n- texto ambíguo que exige confirmação;\n- conteúdo fora do escopo esperado.\n\nRubrica por campo:\n- correto: corresponde à informação explícita na entrada;\n- ausente: o dado não aparece e não deve ser inferido;\n- incorreto: contradiz ou inventa informação;\n- encaminhar: conflito ou ambiguidade requer revisão humana.\n        ",
+      "body": [
+        "O exemplo é hipotético e ilustra como uma rubrica pode distinguir um campo não encontrado de um valor inventado. A distinção importa porque um sistema que sempre preenche todos os campos pode parecer completo enquanto introduz informação sem suporte.",
+        "A equipe ainda precisaria definir quais campos são críticos, como lidar com formatos diferentes e quem revisa os casos encaminhados. Esses detalhes dependem do processo e não podem ser inferidos apenas da saída do modelo."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Avalie com critérios claros e revisão consistente",
+      "body": [
+        "Aplique a mesma rubrica a cada saída e registre evidências da entrada que sustentam a decisão. Quando houver julgamentos subjetivos, peça que mais de uma pessoa revise uma amostra e discuta divergências. Isso ajuda a revelar critérios ambíguos, embora não transforme julgamentos humanos em uma verdade perfeita.",
+        "Separe dimensões que respondem a perguntas diferentes: o resultado está correto para a tarefa? contém informação não apoiada? respeita o formato? sinaliza quando não sabe? requer correção antes de ser usado? Uma nota única pode ocultar um tipo de erro que tem consequência maior.",
+        "Observe resultados por grupo de casos, não apenas no total. Uma taxa agregada pode parecer aceitável enquanto falhas se concentram em entradas longas, dados incompletos ou uma categoria importante. Ao relatar resultados, descreva o tamanho e a origem do conjunto, os critérios e os casos não cobertos."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Compare mudanças sem atribuir causalidade indevida",
+      "body": [
+        "Guarde as saídas avaliadas, a versão do modelo ou serviço, as instruções, os parâmetros e a data do teste. Ao mudar um componente, repita a avaliação com o mesmo conjunto reservado e compare as dimensões relevantes. Essa prática ajuda a identificar regressões, mas um conjunto limitado continua sendo uma amostra do uso possível.",
+        "Se a solução usa busca em documentos, ferramentas ou etapas de pós-processamento, registre essas configurações também. Um resultado ruim pode vir da recuperação de contexto, da transformação dos dados ou de uma integração, e não apenas do modelo.",
+        "Não ajuste os critérios depois de ver os resultados apenas para justificar a liberação. Se uma métrica ou limite mudar, registre a razão e reavalie as consequências. A avaliação deve apoiar uma decisão honesta sobre limites e riscos, não confirmar uma conclusão previamente escolhida."
+      ]
+    },
+    {
+      "type": "content",
+      "heading": "Use os achados para escolher o próximo passo",
+      "body": [
+        "Classifique os erros por tipo, impacto e possibilidade de detecção. Alguns podem ser reduzidos com instruções mais claras; outros exigem dados melhores, uma regra determinística, revisão humana ou restrição de escopo. Nem todo erro deve ser resolvido aumentando a complexidade do sistema.",
+        "Antes de ampliar o uso, decida quais resultados podem ser apresentados como sugestão, quais exigem confirmação e quais devem ser recusados ou encaminhados. Combine responsáveis e um procedimento para rever o comportamento quando as entradas ou o processo mudarem.",
+        "Uma avaliação bem documentada descreve o que foi testado e o que permanece incerto. Ela é uma ferramenta para tomar decisões graduais, não uma certificação de que as respostas futuras serão corretas."
+      ]
+    }
+  ],
+  "references": [
+    "NIST — Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence Profile (AI 600-1), 2024",
+    "Google — Rules of Machine Learning: Best Practices for ML Engineering",
+    "Sculley et al. — Hidden Technical Debt in Machine Learning Systems, 2015"
+  ],
+  "quiz": [
+    {
+      "question": "Por que exemplos escolhidos apenas por parecerem fáceis são insuficientes?",
+      "options": [
+        "Porque não incluem variações, exceções e casos difíceis do uso pretendido.",
+        "Porque toda avaliação precisa ter milhares de exemplos.",
+        "Porque respostas de IA não podem ser avaliadas.",
+        "Porque apenas velocidade deve ser medida."
+      ],
+      "correctIndex": 0,
+      "explanation": "Um conjunto pouco representativo pode esconder falhas justamente nos casos mais importantes ou difíceis."
+    },
+    {
+      "question": "O que fazer quando uma entrada é ambígua ou incompleta?",
+      "options": [
+        "Exigir que o sistema sempre invente um valor provável.",
+        "Definir como sinalizar incerteza ou encaminhar o caso.",
+        "Excluir todos esses casos da avaliação.",
+        "Considerar qualquer resposta fluente como correta."
+      ],
+      "correctIndex": 1,
+      "explanation": "A rubrica deve prever quando pedir contexto ou encaminhar, sem incentivar inferências sem suporte."
+    },
+    {
+      "question": "Por que analisar erros por grupo de casos?",
+      "options": [
+        "Para substituir a revisão dos resultados.",
+        "Porque uma média geral pode esconder falhas concentradas em certos tipos de entrada.",
+        "Para garantir que o conjunto seja imparcial.",
+        "Porque dimensões diferentes de qualidade não importam."
+      ],
+      "correctIndex": 1,
+      "explanation": "Resultados agregados podem mascarar problemas importantes em categorias menores ou entradas específicas."
+    },
+    {
+      "question": "O que uma avaliação limitada permite concluir?",
+      "options": [
+        "Que todas as respostas futuras serão corretas.",
+        "Que riscos e limitações foram eliminados.",
+        "Como o sistema se comportou nos exemplos e condições avaliados, com incertezas ainda abertas.",
+        "Que não será necessário monitorar mudanças."
+      ],
+      "correctIndex": 2,
+      "explanation": "A avaliação fornece evidência sobre o escopo testado, mas não garante comportamento em todos os usos futuros."
+    }
+  ],
+  "flashcards": [
+    {
+      "question": "O que deve ser definido antes de avaliar respostas com IA?",
+      "answer": "A tarefa, as entradas, a saída esperada, quem usará o resultado, os limites e as consequências de erros."
+    },
+    {
+      "question": "Para que serve uma rubrica de avaliação?",
+      "answer": "Para tornar explícitos e consistentes os critérios usados para julgar dimensões de qualidade das respostas."
+    },
+    {
+      "question": "Por que reservar exemplos para uma verificação posterior?",
+      "answer": "Para reduzir o risco de ajustar o sistema aos mesmos exemplos usados para configurar instruções e parâmetros."
+    },
+    {
+      "question": "Por que separar dimensões de qualidade?",
+      "answer": "Uma nota geral pode esconder erros críticos, como informação inventada, omissão ou falta de indicação de incerteza."
+    },
+    {
+      "question": "Uma avaliação comprova que respostas futuras serão corretas?",
+      "answer": "Não. Ela descreve o comportamento nos exemplos e condições avaliados, sem cobrir todos os casos futuros."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Quantos exemplos são necessários para avaliar um sistema?",
+      "answer": "Não há um número universal. O conjunto deve cobrir os tipos de entrada relevantes e os riscos da tarefa; seu tamanho e limites precisam ser descritos para interpretar os resultados."
+    },
+    {
+      "question": "Posso usar o próprio modelo para dar nota às respostas?",
+      "answer": "Essa abordagem pode ajudar em uma triagem, mas também pode ter vieses e discordar de revisores humanos. Valide o método de avaliação contra julgamentos humanos para a tarefa e não o trate como árbitro infalível."
+    },
+    {
+      "question": "Quando devo repetir a avaliação?",
+      "answer": "Ao mudar modelo, instruções, dados, busca, integração ou escopo, e periodicamente quando o uso real indicar novos tipos de entrada ou erros. A frequência depende do risco e do ritmo de mudança."
+    }
+  ]
+}
